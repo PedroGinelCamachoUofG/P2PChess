@@ -1,19 +1,22 @@
-import PyObjects as po
 import pygame as py
-from Game import host, join
+import os
+import src.ErrorHandler as ErrorHandler
+import src.PyObjects as po
+from src.Game import host, join
 
-def main():
+def menu():
     #necessary set up
     py.init()
-    py.display.set_caption("P2PChess0 Menu")
+    py.display.set_caption("P2PChess Menu")
     win = py.display.set_mode((600, 200))
     run = True
 
     #texture imports
-    join_normal = py.image.load("../Textures/Join_Normal.png")
-    join_hover = py.image.load("../Textures/Join_Hover.png")
-    host_normal = py.image.load("../Textures/Host_Normal.png")
-    host_hover = py.image.load("../Textures/Host_Hover.png")
+    dirname = os.path.join( os.path.dirname( __file__ ), '..' )
+    join_normal = py.image.load(os.path.join(dirname, "Textures/Join_Normal.png"))
+    join_hover = py.image.load(os.path.join(dirname, "Textures/Join_Hover.png"))
+    host_normal = py.image.load(os.path.join(dirname, "Textures/Host_Normal.png"))
+    host_hover = py.image.load(os.path.join(dirname, "Textures/Host_Hover.png"))
 
     #instatiate objects
     ip_input = po.InputBox(50, 50, 500, 25, py.font.Font(None, 32))

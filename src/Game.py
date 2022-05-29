@@ -1,5 +1,5 @@
 import pygame as py
-import Net
+import src.Net
 
 
 #functions to call the game in and out
@@ -40,7 +40,7 @@ def game_loop(color, socket):
 
     #necessary setup
     py.init()
-    py.display.set_caption("P2PChess0 Game")
+    py.display.set_caption("P2PChess Game")
     win = py.display.set_mode((600,600))
     run = True
 

@@ -31,9 +31,8 @@ class ErrorHandler:
         if self.error_dict[error][1]:
             self.logger()
 
-    def logger(self):
+    def launchLog(self):
         py.quit()
-        exit()
         py.init()
-        py.display.set_caption("P2PChess0 Error Log")
+        py.display.set_caption("P2PChess Error Log")
         win = py.display.set_mode((600, 200))
