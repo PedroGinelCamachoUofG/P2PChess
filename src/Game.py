@@ -1,5 +1,7 @@
+import sys
+
 import pygame as py
-import src.Net
+import src.Net as Net
 
 
 #functions to call the game in and out
@@ -69,7 +71,7 @@ def game_loop(color, socket):
         for event in py.event.get():
             if event.type == py.QUIT:
                 py.quit()
-                run = False
+                sys.exit()
             #loop over all interactive objects
             #at some point here change the turn flag and send the move
 

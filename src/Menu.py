@@ -1,3 +1,5 @@
+import sys
+
 import pygame as py
 import os
 import src.ErrorHandler as ErrorHandler
@@ -30,8 +32,7 @@ def menu():
         for event in py.event.get():
             if event.type == py.QUIT:
                 py.quit()
-                run = False
-                #sys.exit()
+                sys.exit()
 
             if join_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 join_button.actions[0] = join(ip_input.text.text)
