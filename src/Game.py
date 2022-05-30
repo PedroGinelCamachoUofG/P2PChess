@@ -1,7 +1,8 @@
-import sys
-
 import pygame as py
+import threading
+from queue import Queue
 import src.Net as Net
+from src.State import *
 
 
 #functions to call the game in and out
@@ -40,48 +41,50 @@ STUFF TO DO NOT TO THINK ABOUT:
 '''
 def game_loop(color, socket):
 
-    #necessary setup
+    #pygame setup
     py.init()
     py.display.set_caption("P2PChess Game")
     win = py.display.set_mode((600,600))
     run = True
 
     #texture imports
-
     #instantiate objects
+
+    queue = Queue()
+    board = None
     #FALTA QUE ALBERTICO ME DE LOS OBJETOS
     drawables = []
     
     #set order
     if color == "w":
         turn_flag = True
+        state = Choosing(win, board, queue)
     else:
         turn_flag = False
+        state = Waiting(win, board, queue)
         
     #pygame loop
     while run:
 
         #recv action if awaiting turn
-        if not turn_flag:
+        if turn_flag:
+            state.start()
+            #this is useless now but might be useful if chat implemented
+            state.join()
+            Net.send_move(socket, None)#send the move when this is implemented
+            turn_flag = False
+            state = Waiting(win, board, queue)
+        else:
+            state.start()
             recv_move = Net.recv_move(socket)
-            #change board state accordingly
+            state.join()
+            #change board state accordingly eg
+            board.makeMove(recv_move)
             turn_flag = True
+            state = Choosing(win, board, queue)
 
-        #events
-        for event in py.event.get():
-            if event.type == py.QUIT:
-                run = False
-            #loop over all interactive objects
-            #at some point here change the turn flag and send the move
 
-        #output to window
-        win.fill((255, 255, 255))
-        for elt in drawables:
-            elt.draw(win)
 
-        #put the text drawing here
-
-        py.display.update()
 
     Net.ErrorHandler().launchLog()
 

@@ -1,5 +1,4 @@
 import sys
-
 import pygame
 import pygame as py
 import src.PyObjects as po
@@ -8,7 +7,6 @@ class ErrorHandler:
 
     __instance = None
     error_dict = {}
-
 
     @staticmethod
     def getInstance():
