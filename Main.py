@@ -1,5 +1,26 @@
 from src.Menu import menu
 
+'''
+=================================================================|
+                        TO DO LIST
+STUFF TO CONSIDER:
+   -which way will the board be facing, the same for both players?
+   -exclude enemy pieces from interactibles?
+   -implement drawing system for waiting
+   -get albertico to give you something,
+    think about the pygame necessities of the objects
+    include everything in the board draw,
+   -Timer o un chat con las threads
+
+STUFF TO DO NOT TO THINK ABOUT:
+    -get the textures for stuff on internet
+    (learn to search for this sort of things)
+    -test the Net functions
+    -make some designs to find some proper background color ffs
+    -timer, and display for it
+
+
+'''
 
 # This is a sample Python script.
 

@@ -16,29 +16,7 @@ def join(ip):
     game_loop("b", Net.mode_request(ip, 3000))
 
 #function containing the actual game
-'''
-=================================================================|
-       TO DO LIST FOR THE GAME LOOP
-STUFF TO CONSIDER:
-   -which way will the board be facing, the same for both players?
-   -exclude enemy pieces from interactibles?
-   -how tf does texture import work when working in a function
-   -make menu into a function preferably
-   -get albertico to give you something,
-    think about the pygame necessities of the objects
-    include everything in the board draw,
-   -Podria usar threads o algo para tener al bucle de juego parado
-    y mientras hacer otras cosas como mover el timer o un chat??????
 
-STUFF TO DO NOT TO THINK ABOUT:
-    -get the textures for stuff on internet
-    (learn to search for this sort of things)
-    -test the Net functions
-    -make some designs to find some proper background color ffs
-    -timer, and display for it
-
-
-'''
 def game_loop(color, socket):
 
     #pygame setup
