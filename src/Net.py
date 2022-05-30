@@ -1,17 +1,13 @@
 import socket
 from src.ErrorHandler import ErrorHandler
 
-class Error(Exception):
-    pass
-
 def mode_request(srv_ip, srv_port):
     cli_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         cli_sock.connect((srv_ip, srv_port))
         return cli_sock
     except Exception as e:
-        print(e)
-        ErrorHandler().addError(e)
+        ErrorHandler().addError(e.__str__())
 
 def mode_recieve(srv_port):
     srv_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,8 +25,7 @@ def send_move(sock, move):
         sock.sendall(move)
         return True
     except Exception as e:
-        print(e)
-        ErrorHandler().addError(e)
+        ErrorHandler().addError(e.__str__())
     return False
 
 def recv_move(sock):
@@ -38,12 +33,10 @@ def recv_move(sock):
         move = sock.recv(1024)
         return move
     except Exception as e:
-        print(e)
-        ErrorHandler().addError(e)
+        ErrorHandler().addError(e.__str__())
 
 def end(sock):
     try:
         sock.close()
     except Exception as e:
-        print(e)
-        ErrorHandler().addError(e)
+        ErrorHandler().addError(e.__str__())

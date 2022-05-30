@@ -70,8 +70,7 @@ def game_loop(color, socket):
         #events
         for event in py.event.get():
             if event.type == py.QUIT:
-                py.quit()
-                sys.exit()
+                run = False
             #loop over all interactive objects
             #at some point here change the turn flag and send the move
 
@@ -83,4 +82,6 @@ def game_loop(color, socket):
         #put the text drawing here
 
         py.display.update()
+
+    Net.ErrorHandler().launchLog()
 
