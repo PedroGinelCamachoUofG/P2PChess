@@ -1,6 +1,7 @@
 import threading
 import pygame as py
 import sys
+import src.PyObjects as po
 
 class State(threading.Thread):
 
@@ -30,8 +31,9 @@ class State(threading.Thread):
         pass
 
     def draw(self):
-        #puts board and all drawables on screen
-        #...
+        self.board.draw(self.win)
+        for elt in self.drawables:
+            elt.draw(self.win)
         py.display.update()
 
 
@@ -39,14 +41,23 @@ class Waiting(State):
 
     def __init__(self, win, board, queue):
         super().__init__(win, board, queue)
+        self.arrow_start = (None,None)
+        self.arrow_end = (None,None)
 
     def interactions(self):
         for event in py.event.get():
             if event.type == py.QUIT:
                 py.quit()
                 sys.exit()
-            if event.type == py.MOUSEBUTTONDOWN:
-                print("Click during waiting")
+        if py.mouse.get_pressed()[0]:
+            #if right click delete all arrows
+            self.drawables = []
+        #draw arrows with left click
+        if py.mouse.get_pressed()[2]:
+            self.arrow_start = py.mouse.get_pos()
+        if (not py.mouse.get_pressed()[2]) and self.arrow_start != (None,None):
+            self.arrow_start = py.mouse.get_pos()
+            self.drawables.append(po.arrow(self.arrow_start, self.arrow_end))
 
 
 class Choosing(State):

@@ -1,6 +1,7 @@
 import pygame as py
+import math
 
-#classes for interactibles
+#classes for interactives
 class Button():
     def __init__(self, staticImage, hoverImage, x, y):
         self.currentImage = staticImage
@@ -28,6 +29,9 @@ class Button():
             func()
 
 class InputBox():
+    """
+    Code for giving the input box textures has been commented out
+    """
     def __init__(self, x, y, wid, hei, font):
         self.x = x
         self.y = y
@@ -35,6 +39,7 @@ class InputBox():
         self.hei = hei
         self.text = Text(self.x, self.y, "Type IP here", font)
         self.object = py.Rect((self.x, self.y), (self.wid, self.hei))
+        self.active = False
 
 
         # self.currentImage = staticImage
@@ -52,15 +57,21 @@ class InputBox():
     def delete(self):
         self.text.change_text(self.text.text[:-1])
 
-    def draw(self, win):
-        py.draw.rect(win, py.Color(255, 255, 255), self.object)
-        self.text.draw(win)
-        #win.blit(self.currentImage, (self.x, self.y))
-
     def is_over(self, pointer):
         if self.object.collidepoint(pointer.get_pos()):
             return True
         return False
+
+    def select(self):
+        self.active = True
+
+    def unselect(self):
+        self.active = False
+
+    def draw(self, win):
+        py.draw.rect(win, py.Color(255, 255, 255), self.object)
+        self.text.draw(win)
+        #win.blit(self.currentImage, (self.x, self.y))
 
 class Text():
 
@@ -80,3 +91,29 @@ class Text():
     def draw(self, win):
         self.object = self.font.render(self.text, True, (0,0,0))
         win.blit(self.object, (self.x, self.y))
+
+class arrow():
+
+    def __init__(self, start, end):
+        self.color = (255,0,0)
+        self.point = end
+        self.length = int(math.sqrt(((start[0]-end[0])**2)+((start[1]-end[1])**2)))
+        self.direction = ((end[0]-start[0]),(end[1]-start[1]))
+        #make direction unitary
+        self.direction = (self.direction[0]/math.sqrt((self.direction[0]**2)+(self.direction[1]**2)),
+                          self.direction[1]/math.sqrt((self.direction[0]**2)+(self.direction[1]**2)))
+        self.tangent = (-self.direction[1], self.direction[0])
+        """points:    c\ 
+        a-------------b  \point
+        f-------------e  /
+                      d/
+        """
+        self.a = (start[0]+(self.tangent[0]*5), start[1]+(self.tangent[1]*5))
+        self.f = (start[0]-(self.tangent[0] * 5), start[1]-(self.tangent[1] * 5))
+        self.b = (self.a[0]+(self.direction[0]*(self.length-10))), (self.a[1]+(self.direction[1]*(self.length-10)))
+        self.e = (self.f[0]+(self.direction[0]*(self.length-10))), (self.f[1]+(self.direction[1]*(self.length-10)))
+        self.c = (self.b[0]+self.tangent[0]*5, self.b[1]+self.tangent[1]*5)
+        self.d = (self.e[0]-self.tangent[0]*5, self.e[1]-self.tangent[1]*5)
+
+    def draw(self, win):
+        py.draw.polygon(win, self.color, [self.a, self.b, self.c, self.point, self.d, self.e, self.f])
