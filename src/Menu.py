@@ -33,19 +33,18 @@ def menu():
                 py.quit()
                 sys.exit()
 
-            if event.type == py.MOUSEBUTTONDOWN:
-                if join_button.is_over(py.mouse):
-                    join_button.actions[0] = join(ip_input.text.text)
-                    join_button.exe_all()
+            if join_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
+                join_button.actions[0] = join(ip_input.text.text)
+                join_button.exe_all()
 
-                elif host_button.is_over(py.mouse):
-                    host_button.actions[0] = host()
-                    host_button.exe_all()
+            elif host_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
+                host_button.actions[0] = host()
+                host_button.exe_all()
 
-                elif ip_input.is_over(py.mouse):
-                    ip_input.select()
-                else:
-                    ip_input.unselect()
+            elif ip_input.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
+                ip_input.select()
+            else:
+                ip_input.unselect()
 
             if event.type == py.KEYDOWN and ip_input.active:
                 if event.key == py.K_BACKSPACE:
