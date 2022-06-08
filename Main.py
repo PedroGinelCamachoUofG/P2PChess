@@ -4,22 +4,16 @@ from src.Menu import menu
 =================================================================|
                         TO DO LIST
 STUFF TO CONSIDER:
-   -which way will the board be facing, the same for both players?
-   -exclude enemy pieces from interactives?
-   -implement drawing system for waiting
-   -get Albertico to give you something,
-    think about the pygame necessities of the objects
-    include everything in the board draw,
-   -Timer is a value in board included in the board draw that puts everything on screen
+   -Does the board face the correct way? I forgot
    -o un chat con las threads
+   -move errorhandler to be over all of game and menu and not in net and stuff
+   -Passing information back from threads and closing them when a move has been made.
+   -Debug
+   -Refactor
 
 STUFF TO DO NOT TO THINK ABOUT:
-    -get the textures for stuff on internet
-    (learn to search for this sort of things)
     -test the Net functions
-    -make some designs to find some proper background color ffs
     -timer, and display for it
-
 
 '''
 
