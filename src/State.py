@@ -12,9 +12,9 @@ class State(threading.Thread):
         self.queue = queue
         self.drawables = []
         #self.daemon = True
-        self.receive_messages = args[0]
+        self.receive_messages = args[0]#IndexError: tuple index out of range
 
-    def run(self):
+    def run(self):#Do I know what is going on here?
         while True:
 
             self.interactions()
@@ -31,6 +31,7 @@ class State(threading.Thread):
         pass
 
     def draw(self):
+        self.win.fill((255, 255, 255))
         self.board.draw(self.win)
         for elt in self.drawables:
             elt.draw(self.win)
@@ -64,6 +65,8 @@ class Choosing(State):
 
     def __init__(self, win, board, queue):
         super().__init__(win, board, queue)
+        self.selected_flag = False
+        self.selected_piece = None
 
     def interactions(self):
         for event in py.event.get():
@@ -71,4 +74,23 @@ class Choosing(State):
                 py.quit()
                 sys.exit()
             if event.type == py.MOUSEBUTTONDOWN:
-                print("Click during choosing")
+                #if clicks on a selection square call board to move piece
+                if self.selected_flag:
+                    for elt in self.drawables:
+                        if elt.is_over(py.mouse):
+                            original, new = self.board.make_move(self.selected_piece.coordinates, (elt.x,elt.y), self.board.player_color)
+                            #need to send out the move info and also stop execution
+                else:
+                    #find if a piece was clicked
+                    self.selected_flag, self.selected_piece, moves = self.board.select_piece(py.mouse.get_pos())
+                    #display selection squares for piece
+                    if self.selected_flag:
+                        for elt in moves:
+                            if self.selected_piece.type == "w":
+                                self.drawables.append(po.Square(self.board.white_position(elt)[0],self.board.white_position(elt)[1]))
+                            else:
+                                self.drawables.append(po.Square(self.board.black_position(elt)[0],self.board.black_position(elt)[1]))
+                    #if click was outside selection squares, reset selection
+                    else:
+                        self.drawables = []
+                        #selection flag and piece get reset with assignation above
