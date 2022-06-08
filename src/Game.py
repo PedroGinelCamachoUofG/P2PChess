@@ -21,14 +21,14 @@ def game_loop(color, socket):
     #pygame setup
     py.init()
     py.display.set_caption("P2PChess Game")
-    win = py.display.set_mode((600,600))
+    win = py.display.set_mode((512,644))
     run = True
 
     #texture imports
     #instantiate objects
 
     queue = Queue()
-    board = Board()
+    board = Board(color)
     
     #set order
     if color == "w":
@@ -45,16 +45,19 @@ def game_loop(color, socket):
         if turn_flag:
             state.start()
             #this is useless now but might be useful if chat implemented
-            Net.send_move(socket, None)#send the move when this is implemented
-            state.join()
+            state.join()#need to get information of move from the state
+            Net.send_move(socket, None)
             turn_flag = False
             state = Waiting(win, board, queue)
         else:
             state.start()
             recv_move = Net.recv_move(socket)
             state.join()
-            #change board state accordingly eg
-            board.make_move(recv_move)
+            #call board make_move thing, idk if before or after thread close
+            if color == "b":
+                board.make_move(recv_move[0], recv_move[1], "w")
+            else:
+                board.make_move(recv_move[0], recv_move[1], "b")
             turn_flag = True
             state = Choosing(win, board, queue)
 
