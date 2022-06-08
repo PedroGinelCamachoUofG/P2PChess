@@ -1,8 +1,7 @@
-import pygame as py
-import threading
 from queue import Queue
 import src.Net as Net
 from src.State import *
+from src.Board import Board
 
 
 #functions to call the game in and out
@@ -29,9 +28,7 @@ def game_loop(color, socket):
     #instantiate objects
 
     queue = Queue()
-    board = None
-    #FALTA QUE ALBERTICO ME DE LOS OBJETOS
-    drawables = []
+    board = Board()
     
     #set order
     if color == "w":
@@ -48,8 +45,8 @@ def game_loop(color, socket):
         if turn_flag:
             state.start()
             #this is useless now but might be useful if chat implemented
-            state.join()
             Net.send_move(socket, None)#send the move when this is implemented
+            state.join()
             turn_flag = False
             state = Waiting(win, board, queue)
         else:
@@ -57,7 +54,7 @@ def game_loop(color, socket):
             recv_move = Net.recv_move(socket)
             state.join()
             #change board state accordingly eg
-            board.makeMove(recv_move)
+            board.make_move(recv_move)
             turn_flag = True
             state = Choosing(win, board, queue)
 
