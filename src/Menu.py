@@ -43,7 +43,7 @@ def menu():
 
             elif ip_input.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 ip_input.select()
-            else:
+            elif (not ip_input.is_over(py.mouse)) and event.type == py.MOUSEBUTTONDOWN:
                 ip_input.unselect()
 
             if event.type == py.KEYDOWN and ip_input.active:
