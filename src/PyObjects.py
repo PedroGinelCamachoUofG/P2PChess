@@ -95,7 +95,6 @@ class Text():
 class arrow():
 
     def __init__(self, start, end):
-        self.color = (255,0,0)
         self.point = end
         self.length = int(math.sqrt(((start[0]-end[0])**2)+((start[1]-end[1])**2)))
         self.direction = ((end[0]-start[0]),(end[1]-start[1]))
@@ -116,4 +115,19 @@ class arrow():
         self.d = (self.e[0]-self.tangent[0]*5, self.e[1]-self.tangent[1]*5)
 
     def draw(self, win):
-        py.draw.polygon(win, self.color, [self.a, self.b, self.c, self.point, self.d, self.e, self.f])
+        py.draw.polygon(win, (255,0,0), [self.a, self.b, self.c, self.point, self.d, self.e, self.f])
+
+class Square:
+
+     def __init__(self, x, y):
+         self.x = x
+         self.y = y
+         self.object = py.Rect((self.x, self.y), (64, 64))
+
+     def is_over(self, pointer):
+         if self.x < pointer.get_pos()[0] < self.x+64 and self.y < pointer.get_pos()[1] < self.y+64:
+             return True
+         return False
+
+     def draw(self, win):
+         py.draw.rect(win, (255,0,0), self.object, width=1)
