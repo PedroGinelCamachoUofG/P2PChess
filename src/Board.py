@@ -11,6 +11,7 @@ class Board:
         self.dead_white_counter = 0
         self.black_pieces = {(1,8):Rook("b",(1,8)), (2,8):Knight("b",(2,8)), (3,8):Bishop("b",(3,8)), (4,8):Queen("b",(4,8)), (5,8):King("b",(5,8)), (6,8):Bishop("b",(6,8)), (7,8):Knight("b",(7,8)), (8,8):Rook("b",(8,8)), (1,7):Pawn("b",(1,7)), (2,7):Pawn("b",(2,7)), (3,7):Pawn("b",(3,7)), (4,7):Pawn("b",(4,7)), (5,7):Pawn("b",(5,7)), (6,7):Pawn("b",(6,7)), (7,7):Pawn("b",(7,7)), (8,7):Pawn("b",(8,7))}
         self.dead_black_counter = 0
+        self.dead_pieces = []
         if player_color == "w":
             self.image = py.image.load(os.path.join(dirname, "Textures/board1.png"))
         else:
@@ -29,6 +30,8 @@ class Board:
                 piece.draw(win, self.black_position(piece.coordinates))
             for piece in self.black_pieces.values():
                 piece.draw(win, self.black_position(piece.coordinates))
+        for dead_piece in self.dead_pieces[::-1]:
+            dead_piece.draw(win, self.white_position(dead_piece.coordinates))
 
     def white_position(self, coordinates):
         return coordinates[0] * 64, (9 * 64) - (coordinates[1] * 64)
@@ -88,15 +91,19 @@ class Board:
             if pos in self.white_pieces:
                 self.white_pieces[pos].is_in_play = False
                 #changes piece to the dead zone
-                self.white_pieces[pos].coordinates(self.dead_white_counter / 2, -1)
+                self.white_pieces[pos].coordinates = (0, self.dead_white_counter/2 + 1)
                 self.dead_white_counter += 1
+                self.dead_pieces.append(self.white_pieces[pos])
+                self.white_pieces.pop(pos)
                 return True
         else:
             if pos in self.black_pieces:
                 self.black_pieces[pos].is_in_play = False
-                self.black_pieces[pos].coordinates(self.dead_black_counter / 2, -1)
+                self.black_pieces[pos].coordinates = (9, self.dead_black_counter/2 + 1)
                 self.dead_black_counter += 1
-                return True
+                self.dead_pieces.append(self.black_pieces[pos])
+                self.black_pieces.pop(pos)
+            return True
         return False
 
     def move_piece(self, original, new, flag):
