@@ -8,6 +8,7 @@ class Piece:
         self.type = ""
         self.coordinates = coordinates
         self.object = py.Rect(self.coordinates, (64, 64))
+        self.image = None
     
     def move(self, coords):
         if coords in self.valid_moves():
@@ -83,8 +84,8 @@ class Pawn(Piece):
 
 
 class Queen(Piece):
-    def __init__(self, colour, coordinates, image):
-        super().__init__(colour, coordinates, image)
+    def __init__(self, colour, coordinates):
+        super().__init__(colour, coordinates)
         self.type = "Q"
         dirname = os.path.join(os.path.dirname(__file__), '..')
         if colour == "w":
@@ -152,7 +153,7 @@ class Knight(Piece):
             (self.coordinates[0]-2, self.coordinates[1]+1),
             (self.coordinates[0]-1, self.coordinates[1]+2),
             (self.coordinates[0]+1, self.coordinates[1]+2),
-            (self.coordinates[0]+2, self.coordinates[1])+1,
+            (self.coordinates[0]+2, self.coordinates[1]+1),
             (self.coordinates[0]-2, self.coordinates[1]-1),
             (self.coordinates[0]-1, self.coordinates[1]-2),
             (self.coordinates[0]+1, self.coordinates[1]-2),

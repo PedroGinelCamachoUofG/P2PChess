@@ -22,7 +22,7 @@ def game_loop(color, socket):
     #pygame setup
     py.init()
     py.display.set_caption("P2PChess Game")
-    win = py.display.set_mode((512,644))
+    win = py.display.set_mode((640,582))
     run = True
 
     #texture imports

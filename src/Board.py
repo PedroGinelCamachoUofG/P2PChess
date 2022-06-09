@@ -7,31 +7,34 @@ class Board:
     def __init__(self, player_color):
         dirname = os.path.join(os.path.dirname(__file__), '..')
         """Key: position tuple Value: piece object"""
-        self.white_pieces = {(0,0):Rook("w",(0,0))}
+        self.white_pieces = {(1,1):Rook("w",(1,1)), (2,1):Knight("w",(2,1)), (3,1):Bishop("w",(3,1)), (4,1):Queen("w",(4,1)), (5,1):King("w",(5,1)), (6,1):Bishop("w",(6,1)), (7,1):Knight("w",(7,1)), (8,1):Rook("w",(8,1)), (1,2):Pawn("w",(1,2)), (2,2):Pawn("w",(2,2)), (3,2):Pawn("w",(3,2)), (4,2):Pawn("w",(4,2)), (5,2):Pawn("w",(5,2)), (6,2):Pawn("w",(6,2)), (7,2):Pawn("w",(7,2)), (8,2):Pawn("w",(8,2))}
         self.dead_white_counter = 0
-        self.black_pieces = {(0,0):Rook("b",(0,0))}
+        self.black_pieces = {(1,8):Rook("b",(1,8)), (2,8):Knight("b",(2,8)), (3,8):Bishop("b",(3,8)), (4,8):Queen("b",(4,8)), (5,8):King("b",(5,8)), (6,8):Bishop("b",(6,8)), (7,8):Knight("b",(7,8)), (8,8):Rook("b",(8,8)), (1,7):Pawn("b",(1,7)), (2,7):Pawn("b",(2,7)), (3,7):Pawn("b",(3,7)), (4,7):Pawn("b",(4,7)), (5,7):Pawn("b",(5,7)), (6,7):Pawn("b",(6,7)), (7,7):Pawn("b",(7,7)), (8,7):Pawn("b",(8,7))}
         self.dead_black_counter = 0
-        self.image = py.image.load(os.path.join(dirname, "Textures/board1.png"))
+        if player_color == "w":
+            self.image = py.image.load(os.path.join(dirname, "Textures/board1.png"))
+        else:
+            self.image = py.transform.rotate(py.image.load(os.path.join(dirname, "Textures/board1.png")), 180)
         self.player_color = player_color
 
     def draw(self, win):
-        win.blit(self.image, (0, 64))
+        win.blit(self.image, (64, 58))
         if self.player_color == "w":
             for piece in self.white_pieces.values():
                 piece.draw(win, self.white_position(piece.coordinates))
             for piece in self.black_pieces.values():
-                piece.draw(win, self.black_position(piece.coordinates))
+                piece.draw(win, self.white_position(piece.coordinates))
         else:
             for piece in self.white_pieces.values():
                 piece.draw(win, self.black_position(piece.coordinates))
             for piece in self.black_pieces.values():
-                piece.draw(win, self.white_position(piece.coordinates))
+                piece.draw(win, self.black_position(piece.coordinates))
 
     def white_position(self, coordinates):
-        return coordinates[0] * 64, (coordinates[1] + 1) * 64
+        return coordinates[0] * 64, (9 * 64) - (coordinates[1] * 64)
 
     def black_position(self, coordinates):
-        return coordinates[0] * 64, (9 * 64) - (coordinates[1] * 64)
+        return (9 * 64) - (coordinates[0] * 64), coordinates[1] * 64
 
     def select_piece(self, coordinates):
         #code is roughly identical for each color
