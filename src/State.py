@@ -11,10 +11,10 @@ class State(threading.Thread):
         self.board = board
         self.queue = queue
         self.drawables = []
-        #self.daemon = True
-        self.receive_messages = args[0]#IndexError: tuple index out of range
+        self.daemon = True
+        #self.receive_messages = args[0]#IndexError: tuple index out of range
 
-    def run(self):#Do I know what is going on here?
+    def run(self):
         while True:
 
             self.interactions()
@@ -22,9 +22,18 @@ class State(threading.Thread):
             self.win.fill((255, 255, 255))
             for elt in self.drawables:
                 elt.draw(self.win)
+            py.display.update()
 
-            if not self.queue.get():
-                break
+            if not self.queue.empty():
+                end_flag = self.queue.get()
+                self.queue.task_done()
+                # if a move is being passed too(choosing state) mark as done so join doesn't block
+                if not self.queue.empty():
+                    self.queue.task_done()
+                if end_flag:
+                    break  # end thread
+
+
 
     #abstract method
     def interactions(self):
@@ -45,6 +54,7 @@ class Waiting(State):
         self.arrow_start = (None,None)
         self.arrow_end = (None,None)
 
+    """
     def interactions(self):
         for event in py.event.get():
             if event.type == py.QUIT:
@@ -59,7 +69,7 @@ class Waiting(State):
         if (not py.mouse.get_pressed()[2]) and self.arrow_start != (None,None):
             self.arrow_start = py.mouse.get_pos()
             self.drawables.append(po.arrow(self.arrow_start, self.arrow_end))
-
+    """
 
 class Choosing(State):
 
@@ -68,7 +78,9 @@ class Choosing(State):
         self.selected_flag = False
         self.selected_piece = None
 
+    """
     def interactions(self):
+        print(py.mouse.get_pressed())
         for event in py.event.get():
             if event.type == py.QUIT:
                 py.quit()
@@ -78,8 +90,10 @@ class Choosing(State):
                 if self.selected_flag:
                     for elt in self.drawables:
                         if elt.is_over(py.mouse):
+                            #move piece and get the change as a tuple
                             original, new = self.board.make_move(self.selected_piece.coordinates, (elt.x,elt.y), self.board.player_color)
-                            #need to send out the move info and also stop execution
+                            self.queue.put(True)#put true to signal that thread ends
+                            self.queue.put((original, new))#put move information
                 else:
                     #find if a piece was clicked
                     self.selected_flag, self.selected_piece, moves = self.board.select_piece(py.mouse.get_pos())
@@ -94,3 +108,4 @@ class Choosing(State):
                     else:
                         self.drawables = []
                         #selection flag and piece get reset with assignation above
+    """

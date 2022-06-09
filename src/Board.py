@@ -7,19 +7,25 @@ class Board:
     def __init__(self, player_color):
         dirname = os.path.join(os.path.dirname(__file__), '..')
         """Key: position tuple Value: piece object"""
-        self.white_pieces = {}
+        self.white_pieces = {(0,0):Rook("w",(0,0))}
         self.dead_white_counter = 0
-        self.black_pieces = {}
+        self.black_pieces = {(0,0):Rook("b",(0,0))}
         self.dead_black_counter = 0
         self.image = py.image.load(os.path.join(dirname, "Textures/board1.png"))
         self.player_color = player_color
 
     def draw(self, win):
         win.blit(self.image, (0, 64))
-        for piece in self.white_pieces:
-            piece.draw(win, self.white_position(piece.coordinates))
-        for piece in self.black_pieces:
-            piece.draw(win, self.black_position(piece.coordinates))
+        if self.player_color == "w":
+            for piece in self.white_pieces.values():
+                piece.draw(win, self.white_position(piece.coordinates))
+            for piece in self.black_pieces.values():
+                piece.draw(win, self.black_position(piece.coordinates))
+        else:
+            for piece in self.white_pieces.values():
+                piece.draw(win, self.black_position(piece.coordinates))
+            for piece in self.black_pieces.values():
+                piece.draw(win, self.white_position(piece.coordinates))
 
     def white_position(self, coordinates):
         return coordinates[0] * 64, (coordinates[1] + 1) * 64
@@ -31,7 +37,7 @@ class Board:
         #code is roughly identical for each color
         #restrict selection of pieces only to the player's color
         if self.player_color == "w":
-            for piece in self.white_pieces:
+            for piece in self.white_pieces.values():
                 if piece.is_over(coordinates) and piece.is_in_play:
                     #checks if pawn has piece in front and passes it
                     if piece.type == "P":
@@ -48,7 +54,7 @@ class Board:
                     else:
                         return True, piece, piece.valid_moves()
         else:
-            for piece in self.black_pieces:
+            for piece in self.black_pieces.values():
                 if piece.is_over(coordinates) and piece.is_in_play:
                     if piece.type == "P":
                         if (piece.coordinates[0],piece.coordinates[1]-1) in self.white_pieces.keys():

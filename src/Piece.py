@@ -1,12 +1,12 @@
 import pygame as py
+import os
 
 class Piece:
-    def __init__(self, colour, coordinates, image):
+    def __init__(self, colour, coordinates):
         self.is_in_play = True
         self.colour = colour
         self.type = ""
         self.coordinates = coordinates
-        self.image = image
         self.object = py.Rect(self.coordinates, (64, 64))
     
     def move(self, coords):
@@ -63,20 +63,36 @@ class Piece:
 
 class Pawn(Piece):
 
+    def __init__(self, colour, coordinates):
+        super().__init__(colour, coordinates)
+        self.type = "P"
+        dirname = os.path.join(os.path.dirname(__file__), '..')
+        if colour == "w":
+            self.image = py.image.load(os.path.join(dirname, "Textures/White_Pawn.png"))
+        else:
+            self.image = py.image.load(os.path.join(dirname, "Textures/Black_Pawn.png"))
+        self.image.set_colorkey((255,255,255))
+        self.image = self.image.convert_alpha()
+
     def valid_moves(self, args=False):
         if args[0]:
             return ((self.coordinates-1+(i*2), self.coordinates[1]+1) for i in range(0,1) if 0 < self.coordinates-1+(i*2) < 9)
         else:
             return ((self.coordinates-1+i, self.coordinates[1]+1) for i in range(0,2) if 0 < self.coordinates-1+i < 9)
 
-    def __init__(self, colour, coordinates, image):
-        super().__init__(colour, coordinates, image)
-        self.type = "P"
+
 
 class Queen(Piece):
     def __init__(self, colour, coordinates, image):
         super().__init__(colour, coordinates, image)
         self.type = "Q"
+        dirname = os.path.join(os.path.dirname(__file__), '..')
+        if colour == "w":
+            self.image = py.image.load(os.path.join(dirname, "Textures/White_Queen.png"))
+        else:
+            self.image = py.image.load(os.path.join(dirname, "Textures/Black_Queen.png"))
+        self.image.set_colorkey((255, 255, 255))
+        self.image = self.image.convert_alpha()
     
     def valid_moves(self, args=()):
         positions = []
@@ -85,9 +101,16 @@ class Queen(Piece):
         return positions
 
 class King(Piece):
-    def __init__(self, colour, coordinates, image):
-        super().__init__(colour, coordinates, image)
+    def __init__(self, colour, coordinates):
+        super().__init__(colour, coordinates)
         self.type = "K"
+        dirname = os.path.join(os.path.dirname(__file__), '..')
+        if colour == "w":
+            self.image = py.image.load(os.path.join(dirname, "Textures/White_King.png"))
+        else:
+            self.image = py.image.load(os.path.join(dirname, "Textures/Black_King.png"))
+        self.image.set_colorkey((255, 255, 255))
+        self.image = self.image.convert_alpha()
 
     def valid_moves(self, args=[]):
         positions = [(self.coordinates[0]-1+i,self.coordinates[1]-1+j) for i in range(0,2) for j in range(0,2) if self.in_board((self.coordinates[0]-1+i,self.coordinates[1]-1+j))]
@@ -97,17 +120,31 @@ class King(Piece):
         return positions
 
 class Bishop(Piece):
-    def __init__(self, colour, coordinates, image):
-        super().__init__(colour, coordinates, image)
+    def __init__(self, colour, coordinates):
+        super().__init__(colour, coordinates)
         self.type = "B"
+        dirname = os.path.join(os.path.dirname(__file__), '..')
+        if colour == "w":
+            self.image = py.image.load(os.path.join(dirname, "Textures/White_Bishop.png"))
+        else:
+            self.image = py.image.load(os.path.join(dirname, "Textures/Black_Bishop.png"))
+        self.image.set_colorkey((255, 255, 255))
+        self.image = self.image.convert_alpha()
 
     def valid_moves(self, args=()):
         return self.diagonals()
 
 class Knight(Piece):
-    def __init__(self, colour, coordinates, image):
-        super().__init__(colour, coordinates, image)
+    def __init__(self, colour, coordinates):
+        super().__init__(colour, coordinates)
         self.type = "H"
+        dirname = os.path.join(os.path.dirname(__file__), '..')
+        if colour == "w":
+            self.image = py.image.load(os.path.join(dirname, "Textures/White_Knight.png"))
+        else:
+            self.image = py.image.load(os.path.join(dirname, "Textures/Black_Knight.png"))
+        self.image.set_colorkey((255, 255, 255))
+        self.image = self.image.convert_alpha()
 
     def valid_moves(self, args=()):
         #doing it by hand
@@ -124,9 +161,16 @@ class Knight(Piece):
         return [positions for pos in positions if self.in_board(pos)]
 
 class Rook(Piece):
-    def __init__(self, colour, coordinates, image):
-        super().__init__(colour, coordinates, image)
+    def __init__(self, colour, coordinates):
+        super().__init__(colour, coordinates)
         self.type = "R"
+        dirname = os.path.join(os.path.dirname(__file__), '..')
+        if colour == "w":
+            self.image = py.image.load(os.path.join(dirname, "Textures/White_Rook.png"))
+        else:
+            self.image = py.image.load(os.path.join(dirname, "Textures/Black_Rook.png"))
+        self.image.set_colorkey((255, 255, 255))
+        self.image = self.image.convert_alpha()
 
     def valid_moves(self, args=()):
         return self.straights()

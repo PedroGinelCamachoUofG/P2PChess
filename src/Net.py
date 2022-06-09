@@ -12,7 +12,7 @@ def mode_request(srv_ip, srv_port):
 def mode_recieve(srv_port):
     srv_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        srv_sock.settimeout(10)#low number for testing purposes
+        srv_sock.settimeout(5)#low number for testing purposes
         srv_sock.bind(("", srv_port))
         srv_sock.listen(1)
         cli_sock, cli_addr = srv_sock.accept()
