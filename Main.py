@@ -4,7 +4,6 @@ from src.ErrorHandler import ErrorHandler
 =================================================================|
                         TO DO LIST
 STUFF TO CONSIDER:
-   -Piece display is jankey
    -o un chat con las threads
    -move errorhandler to be over all of game and menu and not in net and stuff
    -Passing information back from threads and closing them when a move has been made.
