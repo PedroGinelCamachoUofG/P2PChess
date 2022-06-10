@@ -2,11 +2,11 @@ import pygame as py
 import math
 
 #classes for interactives
-class Button():
-    def __init__(self, staticImage, hoverImage, x, y):
-        self.currentImage = staticImage
-        self.staticImage = staticImage
-        self.hoverImage = hoverImage
+class Button:
+    def __init__(self, static_image, hover_image, x, y):
+        self.currentImage = static_image
+        self.staticImage = static_image
+        self.hoverImage = hover_image
         self.x = x
         self.y = y
         self.wid = self.currentImage.get_width()
@@ -28,7 +28,7 @@ class Button():
         for func in self.actions:
             func()
 
-class InputBox():
+class InputBox:
     """
     Code for giving the input box textures has been commented out
     """
@@ -37,7 +37,7 @@ class InputBox():
         self.y = y
         self.wid = wid
         self.hei = hei
-        self.text = Text(self.x, self.y, "Type IP here", font)
+        self.text = Text(self.x, self.y, "127.0.0.1", font)
         self.object = py.Rect((self.x, self.y), (self.wid, self.hei))
         self.active = False
 
@@ -73,7 +73,7 @@ class InputBox():
         self.text.draw(win)
         #win.blit(self.currentImage, (self.x, self.y))
 
-class Text():
+class Text:
 
     def __init__(self, x, y, text, font):
         self.text = text
@@ -92,7 +92,7 @@ class Text():
         self.object = self.font.render(self.text, True, (0,0,0))
         win.blit(self.object, (self.x, self.y))
 
-class arrow():
+class Arrow:
 
     def __init__(self, start, end):
         self.point = end
