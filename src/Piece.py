@@ -55,7 +55,9 @@ class Piece:
 
     def is_over(self, pointer):
         if self.object.collidepoint(pointer.get_pos()):
+            print(f"is_over True at {self.coordinates}")
             return True
+        print("is_over False")
         return False
 
     def draw(self, win, coordinates):

@@ -17,11 +17,27 @@ class Board:
         else:
             self.image = py.transform.rotate(py.image.load(os.path.join(dirname, "Textures/board1.png")), 180)
         self.player_color = player_color
+        self.update_collision_box_pos()
+
+    def update_collision_box_pos(self):
+        if self.player_color == "w":
+            for piece in self.white_pieces.values():
+                piece.object = py.Rect(self.white_position(piece.coordinates), (64, 64))
+            for piece in self.black_pieces.values():
+                piece.object = py.Rect(self.white_position(piece.coordinates), (64, 64))
+        else:
+            for piece in self.white_pieces.values():
+                piece.object = py.Rect(self.black_position(piece.coordinates), (64, 64))
+            for piece in self.black_pieces.values():
+                piece.object = py.Rect(self.black_position(piece.coordinates), (64, 64))
+        for dead_piece in self.dead_pieces[::-1]:
+            dead_piece.object = py.Rect((-1,-1), (1,1))
 
     def draw(self, win):
         win.blit(self.image, (64, 58))
         if self.player_color == "w":
             for piece in self.white_pieces.values():
+                piece.object = py.Rect(self.white_position(piece.coordinates), (64, 64))
                 piece.draw(win, self.white_position(piece.coordinates))
             for piece in self.black_pieces.values():
                 piece.draw(win, self.white_position(piece.coordinates))
@@ -45,6 +61,7 @@ class Board:
         if self.player_color == "w":
             for piece in self.white_pieces.values():
                 if piece.is_over(coordinates) and piece.is_in_play:
+                    print(piece)
                     #checks if pawn has piece in front and passes it
                     if piece.type == "P":
                         if (piece.coordinates[0],piece.coordinates[1]+1) in self.black_pieces.keys():
@@ -62,6 +79,7 @@ class Board:
         else:
             for piece in self.black_pieces.values():
                 if piece.is_over(coordinates) and piece.is_in_play:
+                    print(piece)
                     if piece.type == "P":
                         if (piece.coordinates[0],piece.coordinates[1]-1) in self.white_pieces.keys():
                             return True, piece, piece.valid_moves(args=True)
@@ -82,6 +100,7 @@ class Board:
         #moves piece
         self.move_piece(original, new, flag)
         #returns a tuple with the original and new position tuples as a tuple
+        self.update_collision_box_pos()
         return original, new
 
 

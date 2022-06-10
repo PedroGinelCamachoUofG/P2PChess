@@ -54,10 +54,16 @@ class Waiting(State):
         if py.mouse.get_pressed()[0]:
             #if right click delete all arrows
             self.drawables = []
+            self.arrow_start = (None, None)
+            self.arrow_end = (None, None)
         #draw arrows with left click
         if py.mouse.get_pressed()[2]:
+            print(self.arrow_start)
+            print(self.arrow_end)
             self.arrow_start = py.mouse.get_pos()
         if (not py.mouse.get_pressed()[2]) and self.arrow_start != (None,None):
+            print(self.arrow_start)
+            print(self.arrow_end)
             self.arrow_start = py.mouse.get_pos()
             self.drawables.append(po.Arrow(self.arrow_start, self.arrow_end))
 
@@ -86,6 +92,7 @@ class Choosing(State):
                 else:
                     #find if a piece was clicked
                     self.selected_flag, self.selected_piece, valid_moves = self.board.select_piece(py.mouse)
+                    print(self.board.select_piece(py.mouse))
                     #display selection squares for piece
                     if self.selected_flag:
                         for elt in valid_moves:
