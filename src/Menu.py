@@ -62,7 +62,7 @@ def menu():
         #texts
         win.blit(py.font.Font(None, 48).render("Join", True, (0,0,0)), (160,110))
         win.blit(py.font.Font(None, 48).render("Host", True, (0,0,0)), (360,110))
-        win.blit(py.font.Font(None, 16).render("By Pedro Ginel Camacho and Alberto Perez Ortega", True, (0,0,0)), (175,185))
+        win.blit(py.font.Font(None, 16).render("By Pedro Ginel Camacho with help of Alberto Perez Ortega", True, (0,0,0)), (140,185))
 
         py.display.update()
 
