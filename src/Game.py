@@ -1,3 +1,4 @@
+import threading
 from queue import Queue
 import src.Net as Net
 from src.State import *
@@ -14,6 +15,16 @@ def join(ip):
     print(f"joining at {ip}")
     game_loop("b", Net.mode_request(ip, 3000))
 
+#helper function needed to do threading
+
+def threading_recv_move(socket, queue):
+    #listens for move
+    recv_move = Net.recv_move(socket)
+    #when it receives a move it puts it in the queue to stop state function
+    queue.put(True)
+    #puts the moved in the queue
+    queue.put(recv_move)
+
 #function containing the actual game
 
 def game_loop(color, socket):
@@ -25,9 +36,7 @@ def game_loop(color, socket):
     win = py.display.set_mode((640,582))
     run = True
 
-    #texture imports
     #instantiate objects
-
     queue = Queue()
     board = Board(color)
     
@@ -45,19 +54,19 @@ def game_loop(color, socket):
         print(f"This player is: {color} pieces. Is it their turn: {turn_flag}")
         #recv action if awaiting turn
         if turn_flag:
-            state.start()
-            #this is useless now but might be useful if chat implemented
-            state.join()#need to get information of move from the state
+            state.run()
             move = queue.get()
             Net.send_move(socket, move)
             #change state
             turn_flag = False
             state = Waiting(win, board, queue)
         else:
-            state.start()
-            recv_move = Net.recv_move(socket)
-            queue.put(True)#pass a true into queue to tell thread to stop execution
-            state.join()
+            threading.Thread(target=threading_recv_move, args=(socket,queue))
+            state.run()
+            recv_move = queue.get()
+            queue.task_done()
+            #pass a true into queue to tell thread to stop execution
+            print("State ended")
             #call board make_move thing, idk if before or after thread close
             if color == "b":
                 board.make_move(recv_move[0], recv_move[1], "w")
@@ -66,9 +75,6 @@ def game_loop(color, socket):
             #change state
             turn_flag = True
             state = Choosing(win, board, queue)
-
-
-
 
     Net.ErrorHandler().launchLog()
 
