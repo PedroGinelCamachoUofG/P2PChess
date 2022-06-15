@@ -57,15 +57,13 @@ class Waiting(State):
             self.arrow_start = (None, None)
             self.arrow_end = (None, None)
         #draw arrows with left click
-        if py.mouse.get_pressed()[2]:
-            print(self.arrow_start)
-            print(self.arrow_end)
+        if py.mouse.get_pressed()[2] and self.arrow_start == (None, None):
             self.arrow_start = py.mouse.get_pos()
         if (not py.mouse.get_pressed()[2]) and self.arrow_start != (None,None):
-            print(self.arrow_start)
-            print(self.arrow_end)
-            self.arrow_start = py.mouse.get_pos()
+            self.arrow_end = py.mouse.get_pos()
             self.drawables.append(po.Arrow(self.arrow_start, self.arrow_end))
+            self.arrow_start = (None, None)
+            self.arrow_end = (None, None)
 
 
 class Choosing(State):
@@ -86,21 +84,22 @@ class Choosing(State):
                     for elt in self.drawables:
                         if elt.is_over(py.mouse):
                             #move piece and get the change as a tuple
-                            original, new = self.board.make_move(self.selected_piece.coordinates, (elt.x,elt.y), self.board.player_color)
+                            original, new = self.board.make_move(self.selected_piece.coordinates, (elt.board_x,elt.board_y), self.board.player_color)
                             self.queue.put(True)#put true to signal that thread ends
                             self.queue.put((original, new))#put move information
+                    # if click was outside selection squares, reset selection
+                    self.drawables = []
+                    self.selected_flag = False
+                    # selection flag and piece get reset with assignation above
                 else:
                     #find if a piece was clicked
                     self.selected_flag, self.selected_piece, valid_moves = self.board.select_piece(py.mouse)
-                    print(self.board.select_piece(py.mouse))
                     #display selection squares for piece
+                    print(valid_moves)
                     if self.selected_flag:
-                        for elt in valid_moves:
-                            if self.selected_piece.type == "w":
-                                self.drawables.append(po.Square(self.board.white_position(elt)[0],self.board.white_position(elt)[1]))
-                            else:
-                                self.drawables.append(po.Square(self.board.black_position(elt)[0],self.board.black_position(elt)[1]))
-                    #if click was outside selection squares, reset selection
-                    else:
-                        self.drawables = []
-                        #selection flag and piece get reset with assignation above
+                        if self.selected_piece.type == "w":
+                            for elt in valid_moves:
+                                self.drawables.append(po.Square(elt,self.board.black_position(elt)))
+                        else:
+                            for elt in valid_moves:
+                                self.drawables.append(po.Square(elt,self.board.white_position(elt)))

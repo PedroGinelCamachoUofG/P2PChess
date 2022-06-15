@@ -119,9 +119,11 @@ class Arrow:
 
 class Square:
 
-     def __init__(self, x, y):
-         self.x = x
-         self.y = y
+     def __init__(self, board_pos, real_pos):
+         self.board_x = board_pos[0]
+         self.board_y = board_pos[1]
+         self.x = real_pos[0]
+         self.y = real_pos[1]
          self.object = py.Rect((self.x, self.y), (64, 64))
 
      def is_over(self, pointer):

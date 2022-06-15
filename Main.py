@@ -10,6 +10,7 @@ STUFF TO CONSIDER:
    -Debug
    -Refactor
    -Enrocamiento
+   -path blocked by pieces
    -Pawn promotion
 
 STUFF TO DO NOT TO THINK ABOUT:
@@ -31,10 +32,10 @@ def print_hi(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    try:
-        print_hi('PyCharm')
-        menu()
-    except Exception as e:
-        ErrorHandler().addError(e.__str__())
+    #try:
+    print_hi('PyCharm')
+    menu()
+    #except Exception as e:
+    #    ErrorHandler().addError(e.__str__())
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

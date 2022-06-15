@@ -55,8 +55,27 @@ class Board:
     def black_position(self, coordinates):
         return (9 * 64) - (coordinates[0] * 64), coordinates[1] * 64
 
+    def select_pawn(self, piece):
+        if piece.coordinates[1] == 2 or piece.coordinates[1] == 7:
+            return True, piece, piece.valid_moves(args=(1,))
+        if piece.color == "w":
+            if (piece.coordinates[0] - 1, piece.coordinates[1] + 1) in self.black_pieces.keys() and (piece.coordinates[0] + 1, piece.coordinates[1] + 1) in self.black_pieces.keys():
+                return True, piece, piece.valid_moves(args=(4,))
+            elif (piece.coordinates[0] - 1, piece.coordinates[1] + 1) in self.black_pieces.keys():
+                return True, piece, piece.valid_moves(args=(2,))
+            elif (piece.coordinates[0] + 1, piece.coordinates[1] + 1) in self.black_pieces.keys():
+                return True, piece, piece.valid_moves(args=(3,))
+        else:
+            if (piece.coordinates[0] - 1, piece.coordinates[1] - 1) in self.white_pieces.keys() and (piece.coordinates[0] + 1, piece.coordinates[1] - 1) in self.white_pieces.keys():
+                return True, piece, piece.valid_moves(args=(4,))
+            elif (piece.coordinates[0] - 1, piece.coordinates[1] - 1) in self.white_pieces.keys():
+                return True, piece, piece.valid_moves(args=(2,))
+            elif (piece.coordinates[0] + 1, piece.coordinates[1] - 1) in self.white_pieces.keys():
+                return True, piece, piece.valid_moves(args=(3,))
+        return True, piece, piece.valid_moves(args=(0,))
+
     def select_piece(self, coordinates):
-        #code is roughly identical for each color
+        #code is pretty much duplicated but I'm not sure how to not do this
         #restrict selection of pieces only to the player's color
         if self.player_color == "w":
             for piece in self.white_pieces.values():
@@ -64,16 +83,13 @@ class Board:
                     print(piece)
                     #checks if pawn has piece in front and passes it
                     if piece.type == "P":
-                        if (piece.coordinates[0],piece.coordinates[1]+1) in self.black_pieces.keys():
-                            return True, piece, piece.valid_moves(args=True)
-                        else:
-                            return True, piece, piece.valid_moves(args=False)
+                        return self.select_pawn(piece)
                     #King piece must know movement options of all enemies to know where it can move
                     elif piece.type == "K":
                         enemy_moves = []
                         for elt in self.black_pieces.values():
                             enemy_moves.append(elt.valid_moves())
-                        return True, piece, piece.valid_moves(args=enemy_moves)
+                        return True, piece, piece.valid_moves(args=(enemy_moves,))
                     else:
                         return True, piece, piece.valid_moves()
         else:
@@ -81,15 +97,12 @@ class Board:
                 if piece.is_over(coordinates) and piece.is_in_play:
                     print(piece)
                     if piece.type == "P":
-                        if (piece.coordinates[0],piece.coordinates[1]-1) in self.white_pieces.keys():
-                            return True, piece, piece.valid_moves(args=True)
-                        else:
-                            return True, piece, piece.valid_moves(args=False)
+                        return self.select_pawn(piece)
                     elif piece.type == "K":
                         enemy_moves = []
                         for elt in self.white_pieces.values():
                             enemy_moves.append(elt.valid_moves())
-                        return True, piece, piece.valid_moves(args=enemy_moves)
+                        return True, piece, piece.valid_moves(args=(enemy_moves,))
                     else:
                         return True, piece, piece.valid_moves()
         return False, None, None
