@@ -21,8 +21,6 @@ class State:
                 end_flag = self.queue.get()
                 self.queue.task_done()
                 # if a move is being passed too(choosing state) mark as done so join doesn't block
-                if not self.queue.empty():
-                    self.queue.task_done()
                 if end_flag:
                     break  # end thread
 

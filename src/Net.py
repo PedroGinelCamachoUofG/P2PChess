@@ -22,15 +22,19 @@ def mode_recieve(srv_port):
 
 def send_move(sock, move):
     try:
-        sock.sendall(move)
+        move_fixed = (move[0][0], move[0][1], move[1][0], move[1][1])
+        sock.sendall(bytes(move_fixed))
         return True
     except Exception as e:
         ErrorHandler().add_error(e.__str__())
     return False
 
 def recv_move(sock):
+    print("Listening for moves")
     try:
-        move = sock.recv(1024)
+        raw_move = tuple(sock.recv(1024))
+        move = ((raw_move[0],raw_move[1]), (raw_move[2], raw_move[3]))
+        print(move)
         return move
     except Exception as e:
         ErrorHandler().add_error(e.__str__())

@@ -97,12 +97,12 @@ class Arrow:
     def __init__(self, start, end):
         self.point = end
         self.length = int(math.sqrt(((start[0]-end[0])**2)+((start[1]-end[1])**2)))
-        self.direction = ((end[0]-start[0]),(end[1]-start[1]))
+        self.direction = [(end[0] - start[0]), (end[1] - start[1])]
         #make direction unitary
             #this to avoid division by 0 if the line is parallel
         if self.direction[0] == 0 or self.direction[1] == 0:
-            self.direction[0] += 1
-            self.direction[1] += 1
+            self.direction[0] = 1
+            self.direction[1] = 1
         self.direction = (self.direction[0]/math.sqrt((self.direction[0]**2)+(self.direction[1]**2)),
                           self.direction[1]/math.sqrt((self.direction[0]**2)+(self.direction[1]**2)))
         self.tangent = (-self.direction[1], self.direction[0])

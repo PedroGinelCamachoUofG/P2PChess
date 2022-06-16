@@ -18,6 +18,7 @@ def join(ip):
 #helper function needed to do threading
 
 def threading_recv_move(socket, queue):
+    print("executing")
     #listens for move
     recv_move = Net.recv_move(socket)
     #when it receives a move it puts it in the queue to stop state function
@@ -61,12 +62,13 @@ def game_loop(color, socket):
             turn_flag = False
             state = Waiting(win, board, queue)
         else:
-            threading.Thread(target=threading_recv_move, args=(socket,queue))
+            listener = threading.Thread(target=threading_recv_move, args=(socket,queue), daemon=True)
+            listener.start()
             state.run()
             recv_move = queue.get()
             queue.task_done()
             #pass a true into queue to tell thread to stop execution
-            print("State ended")
+            print(f"Move received{recv_move}")
             #call board make_move thing, idk if before or after thread close
             if color == "b":
                 board.make_move(recv_move[0], recv_move[1], "w")

@@ -120,7 +120,7 @@ class Pawn(Piece):
             elif args[0] == 4:
                 return (self.coordinates[0]-1, self.coordinates[1]+1), (self.coordinates[0]+1, self.coordinates[1]+1)
             else:
-                print("promotion")
+                pass
         else:
             if args[0] == 0:
                 return (self.coordinates[0], self.coordinates[1]-1),
@@ -133,7 +133,7 @@ class Pawn(Piece):
             elif args[0] == 4:
                 return (self.coordinates[0]-1, self.coordinates[1]-1), (self.coordinates[0]+1, self.coordinates[1]-1)
             else:
-                print("promotion")
+                pass
 
 class Queen(Piece):
     def __init__(self, color, coordinates):
@@ -190,7 +190,7 @@ class Bishop(Piece):
         self.image.set_colorkey((255, 255, 255))
         self.image = self.image.convert_alpha()
 
-    def valid_moves(self, args=()):
+    def valid_moves(self, args=(None, None)):
         return self.diagonals(args[0], args[1])
 
     def __str__(self):
