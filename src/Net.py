@@ -7,7 +7,7 @@ def mode_request(srv_ip, srv_port):
         cli_sock.connect((srv_ip, srv_port))
         return cli_sock
     except Exception as e:
-        ErrorHandler().addError(e.__str__())
+        ErrorHandler().add_error(e.__str__())
 
 def mode_recieve(srv_port):
     srv_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,14 +18,14 @@ def mode_recieve(srv_port):
         cli_sock, cli_addr = srv_sock.accept()
         return cli_sock
     except Exception as e:
-        ErrorHandler().addError(str(e.__str__()+"h"))
+        ErrorHandler().add_error(str(e.__str__() + "h"))
 
 def send_move(sock, move):
     try:
         sock.sendall(move)
         return True
     except Exception as e:
-        ErrorHandler().addError(e.__str__())
+        ErrorHandler().add_error(e.__str__())
     return False
 
 def recv_move(sock):
@@ -33,10 +33,10 @@ def recv_move(sock):
         move = sock.recv(1024)
         return move
     except Exception as e:
-        ErrorHandler().addError(e.__str__())
+        ErrorHandler().add_error(e.__str__())
 
 def end(sock):
     try:
         sock.close()
     except Exception as e:
-        ErrorHandler().addError(e.__str__())
+        ErrorHandler().add_error(e.__str__())

@@ -10,6 +10,7 @@ STUFF TO CONSIDER:
    -Debug
    -Refactor
    -Enrocamiento
+   -en passant
    -path blocked by pieces
    -Pawn promotion
 

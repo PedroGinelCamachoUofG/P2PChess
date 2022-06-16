@@ -76,5 +76,5 @@ def game_loop(color, socket):
             turn_flag = True
             state = Choosing(win, board, queue)
 
-    Net.ErrorHandler().launchLog()
+    Net.ErrorHandler().launch_log()
 

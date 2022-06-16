@@ -9,19 +9,19 @@ class ErrorHandler:
     error_dict = {}
 
     @staticmethod
-    def getInstance():
+    def get_instance():
         if ErrorHandler.__instance is None:
             ErrorHandler()
         return ErrorHandler.__instance
 
     def __init__(self):
-        if ErrorHandler.__instance != None:
+        if ErrorHandler.__instance is not None:
             raise Exception("2 instances of ErrorHandler detected")
         else:
-            self.cleanLog()
+            self.clean_log()
             ErrorHandler.__instance = self
 
-    def addError(self, error):
+    def add_error(self, error):
         print(f"adding {error}")
         if error in self.error_dict:
             self.error_dict[error][0] =  True
@@ -29,9 +29,9 @@ class ErrorHandler:
             #Unknow errors are considered fatal
             self.error_dict[error] = [True, True, "Unknown Error"]
         if self.error_dict[error][1]:
-            self.launchLog()
+            self.launch_log()
 
-    def cleanLog(self):
+    def clean_log(self):
         """
         Key: exception as raised by python
         Value: [3] containing
@@ -44,7 +44,7 @@ class ErrorHandler:
             "[Errno 11001] getaddrinfo failed":[False, True, "Input given was not an actual IP address"],
         }
 
-    def launchLog(self):
+    def launch_log(self):
         py.display.set_caption("P2PChess Error Log")
         run = True
         win = py.display.set_mode((600, 300))
@@ -65,7 +65,7 @@ class ErrorHandler:
 
             for event in py.event.get():
                 if event.type == py.QUIT:
-                    self.cleanLog()
+                    self.clean_log()
                     py.quit()
                     sys.exit()
 

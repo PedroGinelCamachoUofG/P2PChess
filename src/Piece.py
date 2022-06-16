@@ -17,7 +17,7 @@ class Piece:
     def valid_moves(self, args=()):
         pass
 
-    def diagonals(self):
+    def diagonals(self, allies, enemies):
         output = []
         x_coord,y_coord = self.coordinates[0]-8, self.coordinates[1]-8
         for num in range(0,16):
@@ -25,26 +25,46 @@ class Piece:
             y_coord += 1
             if self.in_board((x_coord,y_coord)) and (x_coord != self.coordinates[0] and y_coord != self.coordinates[1]):
                 output.append((x_coord,y_coord))
+            elif (x_coord,y_coord) in allies:
+                break
+            elif (x_coord,y_coord) in enemies:
+                output.append((x_coord, y_coord))
+                break
         x_coord,y_coord = self.coordinates[0]-8, self.coordinates[1]+8
         for num in range(0,16):
             x_coord += 1
             y_coord -= 1
             if self.in_board((x_coord,y_coord)) and (x_coord != self.coordinates[0] and y_coord != self.coordinates[1]):
                 output.append((x_coord,y_coord))
+            elif (x_coord, y_coord) in allies:
+                break
+            elif (x_coord, y_coord) in enemies:
+                output.append((x_coord, y_coord))
+                break
         return output
 
-    def straights(self):
+    def straights(self, allies, enemies):
         output = []
         x_coord = self.coordinates[0]-8
         for num in range(0,15):
             x_coord += 1
             if self.in_board((x_coord, self.coordinates[1])):
                 output.append((x_coord, self.coordinates[1]))
+            elif (x_coord,self.coordinates[1]) in allies:
+                break
+            elif (x_coord,self.coordinates[1]) in enemies:
+                output.append((x_coord, self.coordinates[1]))
+                break
         y_coord = self.coordinates[1] - 8
         for num in range(0, 15):
             y_coord += 1
             if self.in_board((self.coordinates[0], y_coord)):
                 output.append((self.coordinates[0], y_coord))
+            elif (x_coord,self.coordinates[1]) in allies:
+                break
+            elif (x_coord,self.coordinates[1]) in enemies:
+                output.append((x_coord, self.coordinates[1]))
+                break
         return output
 
     def in_board(self, coordinates):
@@ -92,7 +112,7 @@ class Pawn(Piece):
             if args[0] == 0:
                 return (self.coordinates[0], self.coordinates[1]+1),
             elif args[0] == 1:
-                return (self.coordinates[0], self.coordinates[1]+2),
+                return (self.coordinates[0], self.coordinates[1]+2),(self.coordinates[0], self.coordinates[1]+1)
             elif args[0] == 2:
                 return (self.coordinates[0]-1, self.coordinates[1]+1),
             elif args[0] == 3:
@@ -103,15 +123,15 @@ class Pawn(Piece):
                 print("promotion")
         else:
             if args[0] == 0:
-                return (self.coordinates[0], self.coordinates[1] - 1),
+                return (self.coordinates[0], self.coordinates[1]-1),
             elif args[0] == 1:
-                return (self.coordinates[0], self.coordinates[1] - 2),
+                return (self.coordinates[0], self.coordinates[1]-2), (self.coordinates[0], self.coordinates[1]-1)
             elif args[0] == 2:
-                return (self.coordinates[0] - 1, self.coordinates[1] - 1),
+                return (self.coordinates[0]-1, self.coordinates[1]-1),
             elif args[0] == 3:
-                return (self.coordinates[0] + 1, self.coordinates[1] - 1),
+                return (self.coordinates[0]+1, self.coordinates[1]-1),
             elif args[0] == 4:
-                return (self.coordinates[0] - 1, self.coordinates[1] - 1), (self.coordinates[0] + 1, self.coordinates[1] - 1)
+                return (self.coordinates[0]-1, self.coordinates[1]-1), (self.coordinates[0]+1, self.coordinates[1]-1)
             else:
                 print("promotion")
 
@@ -127,8 +147,8 @@ class Queen(Piece):
         self.image.set_colorkey((255, 255, 255))
         self.image = self.image.convert_alpha()
     
-    def valid_moves(self, args=()):
-        return self.diagonals() + self.straights()
+    def valid_moves(self, args=(None, None)):
+        return self.diagonals(args[0], args[1]) + self.straights(args[0], args[1])
 
     def __str__(self):
         return f"{self.color} Queen at {self.coordinates}"
@@ -171,7 +191,7 @@ class Bishop(Piece):
         self.image = self.image.convert_alpha()
 
     def valid_moves(self, args=()):
-        return self.diagonals()
+        return self.diagonals(args[0], args[1])
 
     def __str__(self):
         return f"{self.color} Bishop at {self.coordinates}"
@@ -218,7 +238,7 @@ class Rook(Piece):
         self.image = self.image.convert_alpha()
 
     def valid_moves(self, args=()):
-        return self.straights()
+        return self.straights(args[0], args[1])
 
     def __str__(self):
         return f"{self.color} Rook at {self.coordinates}"

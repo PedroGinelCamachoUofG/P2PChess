@@ -88,10 +88,10 @@ class Board:
                     elif piece.type == "K":
                         enemy_moves = []
                         for elt in self.black_pieces.values():
-                            enemy_moves.append(elt.valid_moves())
+                            enemy_moves.append(elt.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys())))
                         return True, piece, piece.valid_moves(args=(enemy_moves,))
                     else:
-                        return True, piece, piece.valid_moves()
+                        return True, piece, piece.valid_moves(args=(self.white_pieces.keys(), self.black_pieces.keys()))
         else:
             for piece in self.black_pieces.values():
                 if piece.is_over(coordinates) and piece.is_in_play:
@@ -101,10 +101,10 @@ class Board:
                     elif piece.type == "K":
                         enemy_moves = []
                         for elt in self.white_pieces.values():
-                            enemy_moves.append(elt.valid_moves())
+                            enemy_moves.append(elt.valid_moves(args=(self.white_pieces.keys(), self.black_pieces.keys())))
                         return True, piece, piece.valid_moves(args=(enemy_moves,))
                     else:
-                        return True, piece, piece.valid_moves()
+                        return True, piece, piece.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys()))
         return False, None, None
 
     def make_move(self, original, new, flag):
