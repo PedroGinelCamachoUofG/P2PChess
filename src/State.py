@@ -93,10 +93,9 @@ class Choosing(State):
                     #find if a piece was clicked
                     self.selected_flag, self.selected_piece, valid_moves = self.board.select_piece(py.mouse)
                     #display selection squares for piece
-                    if self.selected_flag:
-                        if self.selected_piece.type == "w":
-                            for elt in valid_moves:
-                                self.drawables.append(po.Square(elt,self.board.black_position(elt)))
-                        else:
-                            for elt in valid_moves:
-                                self.drawables.append(po.Square(elt,self.board.white_position(elt)))
+                    if self.selected_flag and self.board.player_color == "w":
+                        for elt in valid_moves:
+                            self.drawables.append(po.Square(elt, self.board.white_position(elt)))
+                    elif self.selected_flag and self.board.player_color == "b":
+                        for elt in valid_moves:
+                            self.drawables.append(po.Square(elt, self.board.black_position(elt)))

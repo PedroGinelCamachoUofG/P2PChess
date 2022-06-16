@@ -47,13 +47,16 @@ class Board:
             for piece in self.black_pieces.values():
                 piece.draw(win, self.black_position(piece.coordinates))
         for dead_piece in self.dead_pieces[::-1]:
-            dead_piece.draw(win, self.white_position(dead_piece.coordinates))
+            if self.player_color == "w":
+                dead_piece.draw(win, self.white_position(dead_piece.coordinates))
+            elif self.player_color == "b":
+                dead_piece.draw(win, self.black_position(dead_piece.coordinates))
 
     def white_position(self, coordinates):
-        return coordinates[0] * 64, (9 * 64) - (coordinates[1] * 64)
+        return coordinates[0] * 64, (9 - coordinates[1]) * 64
 
     def black_position(self, coordinates):
-        return (9 * 64) - (coordinates[0] * 64), coordinates[1] * 64
+        return (9 - coordinates[0]) * 64, coordinates[1] * 64
 
     def select_pawn(self, piece):
         if piece.coordinates[1] == 2 or piece.coordinates[1] == 7:
@@ -107,11 +110,11 @@ class Board:
                         return True, piece, piece.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys()))
         return False, None, None
 
-    def make_move(self, original, new, flag):
+    def make_move(self, original, new, color_flag):
         #kills piece if it is the case
-        self.kill_piece(original, flag)
+        self.kill_piece(new, color_flag)
         #moves piece
-        self.move_piece(original, new, flag)
+        self.move_piece(original, new, color_flag)
         #returns a tuple with the original and new position tuples as a tuple
         self.update_collision_box_pos()
         return original, new
@@ -127,8 +130,8 @@ class Board:
                 self.dead_white_counter += 1
                 self.dead_pieces.append(self.white_pieces[pos])
                 self.white_pieces.pop(pos)
-                return True
-        else:
+            return True
+        elif color == "w":
             if pos in self.black_pieces:
                 self.black_pieces[pos].is_in_play = False
                 self.black_pieces[pos].coordinates = (9, self.dead_black_counter/2 + 1)
@@ -140,10 +143,10 @@ class Board:
 
     def move_piece(self, original, new, flag):
         #if piece is in play changes its coordinates and dictionary entry
-        if flag == "w" and self.white_pieces[original].is_in_play:
+        if flag == "w" and new not in self.white_pieces.keys():
             self.white_pieces[original].coordinates = new
             self.white_pieces[new] = self.white_pieces[original]
-        elif self.black_pieces[original].is_in_play:
+        elif flag == "b" and new not in self.black_pieces.keys():
             self.black_pieces[original].coordinates = new
             self.black_pieces[new] = self.black_pieces[original]
         else:
