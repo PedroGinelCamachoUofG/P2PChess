@@ -1,4 +1,4 @@
-import pygame as py
+
 import os
 
 class Piece:
@@ -19,29 +19,26 @@ class Piece:
 
     def diagonals(self, allies, enemies):
         output = []
-        x_coord,y_coord = self.coordinates[0]-8, self.coordinates[1]-8
-        for num in range(0,16):
-            x_coord += 1
-            y_coord += 1
-            if self.in_board((x_coord,y_coord)) and (x_coord != self.coordinates[0] and y_coord != self.coordinates[1]):
-                output.append((x_coord,y_coord))
-            elif (x_coord,y_coord) in allies:
-                break
-            elif (x_coord,y_coord) in enemies:
-                output.append((x_coord, y_coord))
-                break
-        x_coord,y_coord = self.coordinates[0]-8, self.coordinates[1]+8
-        for num in range(0,16):
-            x_coord += 1
-            y_coord -= 1
-            if self.in_board((x_coord,y_coord)) and (x_coord != self.coordinates[0] and y_coord != self.coordinates[1]):
-                output.append((x_coord,y_coord))
-            elif (x_coord, y_coord) in allies:
-                break
-            elif (x_coord, y_coord) in enemies:
-                output.append((x_coord, y_coord))
-                break
-        return output
+        for value in range(0,4):
+            if value == 0:
+                array = (8,8,-1,-1)
+            elif value == 1:
+                array = (-8,8,1,-1)
+            elif value == 2:
+                array = (8,-8,-1,1)
+            else:
+                array = (-8,-8,1,1)
+            x_coord,y_coord = self.coordinates[0]+array[0], self.coordinates[1]+array[1]
+            for num in range(0,16):
+                x_coord += array[2]
+                y_coord += array[3]
+                if self.in_board((x_coord,y_coord)) and (x_coord != self.coordinates[0] and y_coord != self.coordinates[1]):
+                    output.append((x_coord,y_coord))
+                elif (x_coord,y_coord) in allies:
+                    break
+                elif (x_coord,y_coord) in enemies:
+                    output.append((x_coord, y_coord))
+                    break
 
     def straights(self, allies, enemies):
         output = []
