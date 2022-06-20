@@ -3,21 +3,22 @@ from src.ErrorHandler import ErrorHandler
 '''
 =================================================================|
                         TO DO LIST
-STUFF TO CONSIDER:
-   -o un chat con las threads
-   -move errorhandler to be over all of game and menu and not in net and stuff
-   -Passing information back from threads and closing them when a move has been made.
-   -Debug
+STUFF TO CONSIDER: 
    -Refactor
+   -King movement not blocked correctly-> haz una función para calcular el jaque, usala para ganar, enrocamiento y mover al rey
    -Enrocamiento
-   -en passant
-   -path blocked by pieces
    -Pawn promotion
 
 STUFF TO DO NOT TO THINK ABOUT:
-    -test the Net functions
+    -historial de movimientos
     -timer, and display for it
-
+    -and manual thing
+    -chat con threads
+    -game end nicely
+    -play again
+    -put the last IP address as default, historial de partidas
+BUGS:
+    
 '''
 
 # This is a sample Python script.

@@ -1,4 +1,4 @@
-
+import pygame as py
 import os
 
 class Piece:
@@ -17,58 +17,31 @@ class Piece:
     def valid_moves(self, args=()):
         pass
 
-    def diagonals(self, allies, enemies):
+    def move_calculate(self, allies, enemies, move_set):
+        """
+        move_set values:
+        ((1, 1), (-1, 1), (1, -1), (-1, -1)) for diagonals: x
+        ((1, 0), (-1, 0), (0, 1), (0, -1)) for straights: +
+        """
         output = []
-        for value in range(0,4):
-            if value == 0:
-                array = (8,8,-1,-1)
-            elif value == 1:
-                array = (-8,8,1,-1)
-            elif value == 2:
-                array = (8,-8,-1,1)
-            else:
-                array = (-8,-8,1,1)
-            x_coord,y_coord = self.coordinates[0]+array[0], self.coordinates[1]+array[1]
-            for num in range(0,16):
-                x_coord += array[2]
-                y_coord += array[3]
-                if self.in_board((x_coord,y_coord)) and (x_coord != self.coordinates[0] and y_coord != self.coordinates[1]):
-                    output.append((x_coord,y_coord))
-                elif (x_coord,y_coord) in allies:
+        for i in range(0, 4):
+            for num in range(1, 8):
+                pos = (self.coordinates[0] + move_set[i][0] * num, self.coordinates[1] + move_set[i][1] * num)
+                if pos in allies:
                     break
-                elif (x_coord,y_coord) in enemies:
-                    output.append((x_coord, y_coord))
+                elif pos in enemies:
+                    output.append(pos)
                     break
-
-    def straights(self, allies, enemies):
-        output = []
-        x_coord = self.coordinates[0]-8
-        for num in range(0,15):
-            x_coord += 1
-            if self.in_board((x_coord, self.coordinates[1])):
-                output.append((x_coord, self.coordinates[1]))
-            elif (x_coord,self.coordinates[1]) in allies:
-                break
-            elif (x_coord,self.coordinates[1]) in enemies:
-                output.append((x_coord, self.coordinates[1]))
-                break
-        y_coord = self.coordinates[1] - 8
-        for num in range(0, 15):
-            y_coord += 1
-            if self.in_board((self.coordinates[0], y_coord)):
-                output.append((self.coordinates[0], y_coord))
-            elif (x_coord,self.coordinates[1]) in allies:
-                break
-            elif (x_coord,self.coordinates[1]) in enemies:
-                output.append((x_coord, self.coordinates[1]))
-                break
+                elif self.in_board(pos):
+                    output.append(pos)
+                else:
+                    break
         return output
 
     def in_board(self, coordinates):
         if ((coordinates[0] > 8) or (coordinates[1] > 8) or (coordinates[0] < 1) or (coordinates[1] < 1)) or self.coordinates == coordinates:
             return False
-        else:
-            return True
+        return True
 
     def is_over(self, pointer):
         if self.object.collidepoint(pointer.get_pos()):
@@ -104,33 +77,36 @@ class Pawn(Piece):
     4-Can eat both
     5-Promotion -> change piece
     """
-    def valid_moves(self, args=(0,)):
+    def valid_moves(self, args=(None, None)):
+        output = []
         if self.color == "w":
-            if args[0] == 0:
-                return (self.coordinates[0], self.coordinates[1]+1),
-            elif args[0] == 1:
-                return (self.coordinates[0], self.coordinates[1]+2),(self.coordinates[0], self.coordinates[1]+1)
-            elif args[0] == 2:
-                return (self.coordinates[0]-1, self.coordinates[1]+1),
-            elif args[0] == 3:
-                return (self.coordinates[0]+1, self.coordinates[1]+1),
-            elif args[0] == 4:
-                return (self.coordinates[0]-1, self.coordinates[1]+1), (self.coordinates[0]+1, self.coordinates[1]+1)
-            else:
-                pass
+            # move forward one
+            if (self.coordinates[0], self.coordinates[1] + 1) not in (args[0] and args[1]):
+                output.append((self.coordinates[0], self.coordinates[1] + 1))
+            # move 2 at start
+            if self.coordinates[1] == 2 and ((self.coordinates[0], self.coordinates[1] + 2) not in args[0]) and ((self.coordinates[0], self.coordinates[1] + 1) not in args[0]) and ((self.coordinates[0], self.coordinates[1] + 2) not in args[1]):
+                output.append((self.coordinates[0], self.coordinates[1] + 2))
+            # eat sideways
+            if (self.coordinates[0] - 1, self.coordinates[1] + 1) in args[1]:
+                output.append((self.coordinates[0] - 1, self.coordinates[1] + 1))
+            if (self.coordinates[0] + 1, self.coordinates[1] + 1) in args[1]:
+                output.append((self.coordinates[0] + 1, self.coordinates[1] + 1))
+
+        elif self.color == "b":
+            # move forward one
+            if (self.coordinates[0], self.coordinates[1] - 1) not in (args[0] and args[1]):
+                output.append((self.coordinates[0], self.coordinates[1] - 1))
+            # move 2 at start
+            if self.coordinates[1] == 7 and ((self.coordinates[0], self.coordinates[1] - 2) not in args[0]) and ((self.coordinates[0], self.coordinates[1] - 1) not in args[0]) and ((self.coordinates[0], self.coordinates[1] - 2) not in  args[1]):
+                output.append((self.coordinates[0], self.coordinates[1] - 2))
+            # eat sideways
+            if (self.coordinates[0] - 1, self.coordinates[1] - 1) in args[1]:
+                output.append((self.coordinates[0] - 1, self.coordinates[1] - 1))
+            if (self.coordinates[0] + 1, self.coordinates[1] - 1) in args[1]:
+                output.append((self.coordinates[0] + 1, self.coordinates[1] - 1))
         else:
-            if args[0] == 0:
-                return (self.coordinates[0], self.coordinates[1]-1),
-            elif args[0] == 1:
-                return (self.coordinates[0], self.coordinates[1]-2), (self.coordinates[0], self.coordinates[1]-1)
-            elif args[0] == 2:
-                return (self.coordinates[0]-1, self.coordinates[1]-1),
-            elif args[0] == 3:
-                return (self.coordinates[0]+1, self.coordinates[1]-1),
-            elif args[0] == 4:
-                return (self.coordinates[0]-1, self.coordinates[1]-1), (self.coordinates[0]+1, self.coordinates[1]-1)
-            else:
-                pass
+            print("Pawn has wrong color")
+        return output
 
 class Queen(Piece):
     def __init__(self, color, coordinates):
@@ -145,7 +121,8 @@ class Queen(Piece):
         self.image = self.image.convert_alpha()
     
     def valid_moves(self, args=(None, None)):
-        return self.diagonals(args[0], args[1]) + self.straights(args[0], args[1])
+        return self.move_calculate(args[0], args[1], ((1,1),(-1,1),(1,-1),(-1,-1)))\
+               + self.move_calculate(args[0], args[1], ((1,0),(-1,0),(0,1),(0,-1)))
 
     def __str__(self):
         return f"{self.color} Queen at {self.coordinates}"
@@ -164,9 +141,9 @@ class King(Piece):
 
     def valid_moves(self, args=([],)):
         positions = [(self.coordinates[0]-1+i,self.coordinates[1]-1+j) for i in range(0,3) for j in range(0,3) if self.in_board((self.coordinates[0]-1+i,self.coordinates[1]-1+j))]
-
-        if args[0]:
+        if not args[0]:
             return positions
+        print(args[0])
         for elt in args[0]:
             if elt in positions:
                 positions.remove(elt)
@@ -188,7 +165,7 @@ class Bishop(Piece):
         self.image = self.image.convert_alpha()
 
     def valid_moves(self, args=(None, None)):
-        return self.diagonals(args[0], args[1])
+        return self.move_calculate(args[0], args[1], ((1,1),(-1,1),(1,-1),(-1,-1)))
 
     def __str__(self):
         return f"{self.color} Bishop at {self.coordinates}"
@@ -205,7 +182,7 @@ class Knight(Piece):
         self.image.set_colorkey((255, 255, 255))
         self.image = self.image.convert_alpha()
 
-    def valid_moves(self, args=()):
+    def valid_moves(self, args=(None, None)):
         #doing it by hand
         positions = [
             (self.coordinates[0]-2, self.coordinates[1]+1),
@@ -217,7 +194,7 @@ class Knight(Piece):
             (self.coordinates[0]+1, self.coordinates[1]-2),
             (self.coordinates[0]+2, self.coordinates[1]-1)
         ]
-        return [pos for pos in positions if self.in_board(pos)]
+        return [pos for pos in positions if self.in_board(pos) and pos not in args[0]]
 
     def __str__(self):
         return f"{self.color} Knight at {self.coordinates}"
@@ -234,8 +211,8 @@ class Rook(Piece):
         self.image.set_colorkey((255, 255, 255))
         self.image = self.image.convert_alpha()
 
-    def valid_moves(self, args=()):
-        return self.straights(args[0], args[1])
+    def valid_moves(self, args=(None, None)):
+        return self.move_calculate(args[0], args[1], ((1,0),(-1,0),(0,1),(0,-1)))
 
     def __str__(self):
         return f"{self.color} Rook at {self.coordinates}"

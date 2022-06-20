@@ -30,11 +30,9 @@ def send_move(sock, move):
     return False
 
 def recv_move(sock):
-    print("Listening for moves")
     try:
         raw_move = tuple(sock.recv(1024))
         move = ((raw_move[0],raw_move[1]), (raw_move[2], raw_move[3]))
-        print(move)
         return move
     except Exception as e:
         ErrorHandler().add_error(e.__str__())

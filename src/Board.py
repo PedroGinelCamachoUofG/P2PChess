@@ -46,11 +46,13 @@ class Board:
                 piece.draw(win, self.black_position(piece.coordinates))
             for piece in self.black_pieces.values():
                 piece.draw(win, self.black_position(piece.coordinates))
-        for dead_piece in self.dead_pieces[::-1]:
-            if self.player_color == "w":
+        if self.player_color == "w":
+            for dead_piece in self.dead_pieces[::-1]:
                 dead_piece.draw(win, self.white_position(dead_piece.coordinates))
-            elif self.player_color == "b":
-                dead_piece.draw(win, self.black_position(dead_piece.coordinates))
+        elif self.player_color == "b":
+            for dead_piece in self.dead_pieces[::-1]:
+                dead_piece.draw(win, self.white_position(dead_piece.coordinates))
+
 
     def white_position(self, coordinates):
         return coordinates[0] * 64, (9 - coordinates[1]) * 64
@@ -58,24 +60,13 @@ class Board:
     def black_position(self, coordinates):
         return (9 - coordinates[0]) * 64, coordinates[1] * 64
 
-    def select_pawn(self, piece):
-        if piece.coordinates[1] == 2 or piece.coordinates[1] == 7:
-            return True, piece, piece.valid_moves(args=(1,))
-        if piece.color == "w":
-            if (piece.coordinates[0] - 1, piece.coordinates[1] + 1) in self.black_pieces.keys() and (piece.coordinates[0] + 1, piece.coordinates[1] + 1) in self.black_pieces.keys():
-                return True, piece, piece.valid_moves(args=(4,))
-            elif (piece.coordinates[0] - 1, piece.coordinates[1] + 1) in self.black_pieces.keys():
-                return True, piece, piece.valid_moves(args=(2,))
-            elif (piece.coordinates[0] + 1, piece.coordinates[1] + 1) in self.black_pieces.keys():
-                return True, piece, piece.valid_moves(args=(3,))
-        else:
-            if (piece.coordinates[0] - 1, piece.coordinates[1] - 1) in self.white_pieces.keys() and (piece.coordinates[0] + 1, piece.coordinates[1] - 1) in self.white_pieces.keys():
-                return True, piece, piece.valid_moves(args=(4,))
-            elif (piece.coordinates[0] - 1, piece.coordinates[1] - 1) in self.white_pieces.keys():
-                return True, piece, piece.valid_moves(args=(2,))
-            elif (piece.coordinates[0] + 1, piece.coordinates[1] - 1) in self.white_pieces.keys():
-                return True, piece, piece.valid_moves(args=(3,))
-        return True, piece, piece.valid_moves(args=(0,))
+    def select_pawn(self, piece, allies, enemies):
+        output = piece.valid_moves(args=(allies, enemies))
+        if piece.coordinates[1] == 8 and piece.color == "w":
+            raise Exception("Promotion selected")
+        elif piece.coordinates[1] == 1 and piece.color == "b":
+            raise Exception("Promotion selected")
+        return True, piece, output
 
     def select_piece(self, coordinates):
         #code is pretty much duplicated but I'm not sure how to not do this
@@ -86,13 +77,15 @@ class Board:
                     print(piece)
                     #checks if pawn has piece in front and passes it
                     if piece.type == "P":
-                        return self.select_pawn(piece)
+                        return self.select_pawn(piece, self.white_pieces.keys(), self.black_pieces.keys())
                     #King piece must know movement options of all enemies to know where it can move
                     elif piece.type == "K":
-                        enemy_moves = []
+                        blocked_moves = [pos for pos in self.white_pieces.keys()]
                         for elt in self.black_pieces.values():
-                            enemy_moves.append(elt.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys())))
-                        return True, piece, piece.valid_moves(args=(enemy_moves,))
+                            enemy_piece_moves = elt.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys()))
+                            for move in enemy_piece_moves:
+                                blocked_moves.append(move)
+                        return True, piece, piece.valid_moves(args=(blocked_moves,))
                     else:
                         return True, piece, piece.valid_moves(args=(self.white_pieces.keys(), self.black_pieces.keys()))
         else:
@@ -100,12 +93,14 @@ class Board:
                 if piece.is_over(coordinates) and piece.is_in_play:
                     print(piece)
                     if piece.type == "P":
-                        return self.select_pawn(piece)
+                        return self.select_pawn(piece, self.black_pieces.keys(), self.white_pieces.keys())
                     elif piece.type == "K":
-                        enemy_moves = []
+                        blocked_moves = [pos for pos in self.black_pieces.keys()]
                         for elt in self.white_pieces.values():
-                            enemy_moves.append(elt.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys())))
-                        return True, piece, piece.valid_moves(args=(enemy_moves,))
+                            enemy_piece_moves = elt.valid_moves(args=(self.white_pieces.keys(), self.black_pieces.keys()))
+                            for move in enemy_piece_moves:
+                                blocked_moves.append(move)
+                        return True, piece, piece.valid_moves(args=(blocked_moves,))
                     else:
                         return True, piece, piece.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys()))
         return False, None, None
@@ -124,6 +119,8 @@ class Board:
         #color indicates the killer piece, not the killed
         if color == "b":
             if pos in self.white_pieces:
+                if self.white_pieces[pos].type == "K":
+                    raise Exception("Game over")
                 self.white_pieces[pos].is_in_play = False
                 #changes piece to the dead zone
                 self.white_pieces[pos].coordinates = (0, self.dead_white_counter/2 + 1)
@@ -133,6 +130,8 @@ class Board:
             return True
         elif color == "w":
             if pos in self.black_pieces:
+                if self.black_pieces[pos].type == "K":
+                    raise Exception("Game over")
                 self.black_pieces[pos].is_in_play = False
                 self.black_pieces[pos].coordinates = (9, self.dead_black_counter/2 + 1)
                 self.dead_black_counter += 1
@@ -143,11 +142,26 @@ class Board:
 
     def move_piece(self, original, new, flag):
         #if piece is in play changes its coordinates and dictionary entry
+        self.check_en_passant(original, new, flag)
         if flag == "w" and new not in self.white_pieces.keys():
             self.white_pieces[original].coordinates = new
             self.white_pieces[new] = self.white_pieces[original]
+            self.white_pieces.pop(original)
         elif flag == "b" and new not in self.black_pieces.keys():
             self.black_pieces[original].coordinates = new
             self.black_pieces[new] = self.black_pieces[original]
+            self.black_pieces.pop(original)
         else:
             raise Exception("Invalid move")
+
+    def check_en_passant(self, original, new, flag):
+        if flag == "w":
+            piece = self.white_pieces[original]
+            if piece.type == "P" and new == (piece.coordinates[0], piece.coordinates[1] + 2):
+                if (piece.coordinates[0], piece.coordinates[1] + 1) in self.black_pieces:
+                    self.kill_piece((piece.coordinates[0], piece.coordinates[1] + 1), "w")
+        elif flag == "b":
+            piece = self.black_pieces[original]
+            if piece.type == "P" and new == (piece.coordinates[0], piece.coordinates[1] - 2):
+                if (piece.coordinates[0], piece.coordinates[1] - 1) in self.white_pieces:
+                    self.kill_piece((piece.coordinates[0], piece.coordinates[1] - 1), "b")
