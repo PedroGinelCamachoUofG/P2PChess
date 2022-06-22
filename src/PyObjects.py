@@ -1,3 +1,5 @@
+import os
+
 import pygame as py
 import math
 
@@ -129,6 +131,8 @@ class Square:
          self.x = real_pos[0]
          self.y = real_pos[1]
          self.object = py.Rect((self.x, self.y), (64, 64))
+         self.image = None
+         self.info = []
 
      def is_over(self, pointer):
          if self.x < pointer.get_pos()[0] < self.x+64 and self.y < pointer.get_pos()[1] < self.y+64:
@@ -137,3 +141,33 @@ class Square:
 
      def draw(self, win):
          py.draw.rect(win, (255,0,0), self.object, width=1)
+
+    #this is for making the promotion selection squares
+     def set_image(self, piece_type, piece_color):
+         self.info.append(piece_type)
+         self.info.append(piece_color)
+         dirname = os.path.join(os.path.dirname(__file__), '..')
+         if piece_color == "w":
+             if piece_type == "R":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/White_Rook.png"))
+             elif piece_type == "B":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/White_Bishop.png"))
+             elif piece_type == "H":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/White_Knight.png"))
+             elif piece_type == "Q":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/White_Queen.png"))
+             else:
+                 raise Exception("invalid piece selection")
+         elif piece_color == "b":
+             if piece_type == "R":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/Black_Rook.png"))
+             elif piece_type == "B":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/Black_Bishop.png"))
+             elif piece_type == "H":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/Black_Knight.png"))
+             elif piece_type == "Q":
+                 self.image = py.image.load(os.path.join(dirname, "Textures/Black_Queen.png"))
+             else:
+                 raise Exception("invalid piece selection")
+         else:
+             raise Exception("Invalid color at PyObjects.set_image")

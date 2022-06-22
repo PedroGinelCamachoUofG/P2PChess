@@ -63,9 +63,9 @@ class Board:
     def select_pawn(self, piece, allies, enemies):
         output = piece.valid_moves(args=(allies, enemies))
         if piece.coordinates[1] == 8 and piece.color == "w":
-            raise Exception("Promotion selected")
+            raise Exception(f"Promotion selected at {piece.coordinates}")
         elif piece.coordinates[1] == 1 and piece.color == "b":
-            raise Exception("Promotion selected")
+            raise Exception(f"Promotion selected at {piece.coordinates}")
         return True, piece, output
 
     def select_piece(self, coordinates):
@@ -165,3 +165,6 @@ class Board:
             if piece.type == "P" and new == (piece.coordinates[0], piece.coordinates[1] - 2):
                 if (piece.coordinates[0], piece.coordinates[1] - 1) in self.white_pieces:
                     self.kill_piece((piece.coordinates[0], piece.coordinates[1] - 1), "b")
+
+    def promote_pawn(self, pawn_location, promote_to):
+        pass
