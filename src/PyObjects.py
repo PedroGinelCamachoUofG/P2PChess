@@ -140,7 +140,10 @@ class Square:
          return False
 
      def draw(self, win):
-         py.draw.rect(win, (255,0,0), self.object, width=1)
+         if self.image is not None:
+             win.blit(self.image, (self.x, self.y))
+         else:
+             py.draw.rect(win, (255,0,0), self.object, width=1)
 
     #this is for making the promotion selection squares
      def set_image(self, piece_type, piece_color):
@@ -150,23 +153,31 @@ class Square:
          if piece_color == "w":
              if piece_type == "R":
                  self.image = py.image.load(os.path.join(dirname, "Textures/White_Rook.png"))
+                 self.info.append(1)
              elif piece_type == "B":
                  self.image = py.image.load(os.path.join(dirname, "Textures/White_Bishop.png"))
+                 self.info.append(2)
              elif piece_type == "H":
                  self.image = py.image.load(os.path.join(dirname, "Textures/White_Knight.png"))
+                 self.info.append(3)
              elif piece_type == "Q":
                  self.image = py.image.load(os.path.join(dirname, "Textures/White_Queen.png"))
+                 self.info.append(4)
              else:
                  raise Exception("invalid piece selection")
          elif piece_color == "b":
              if piece_type == "R":
                  self.image = py.image.load(os.path.join(dirname, "Textures/Black_Rook.png"))
+                 self.info.append(1)
              elif piece_type == "B":
                  self.image = py.image.load(os.path.join(dirname, "Textures/Black_Bishop.png"))
+                 self.info.append(2)
              elif piece_type == "H":
                  self.image = py.image.load(os.path.join(dirname, "Textures/Black_Knight.png"))
+                 self.info.append(3)
              elif piece_type == "Q":
                  self.image = py.image.load(os.path.join(dirname, "Textures/Black_Queen.png"))
+                 self.info.append(4)
              else:
                  raise Exception("invalid piece selection")
          else:

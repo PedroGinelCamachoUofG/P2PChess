@@ -7,7 +7,6 @@ STUFF TO CONSIDER:
    -Refactor
    -King movement not blocked correctly-> haz una función para calcular el jaque, usala para ganar, enrocamiento y mover al rey
    -Enrocamiento
-   -Pawn promotion
 
 STUFF TO DO NOT TO THINK ABOUT:
     -historial de movimientos

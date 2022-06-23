@@ -1,4 +1,3 @@
-import pygame as py
 import sys
 import src.PyObjects as po
 from src.Piece import *
@@ -79,7 +78,16 @@ class Choosing(State):
                 py.quit()
                 sys.exit()
             if event.type == py.MOUSEBUTTONDOWN:
-                #if clicks on a selection square call board to move piece
+                #for pawn promotion, we have a different selection menu
+                if self.promotion_flag:
+                    for elt in self.drawables:
+                        if elt.is_over(py.mouse):
+                            self.board.promote_pawn(self.selected_piece.coordinates, elt.info[2], self.selected_piece.color)
+                            self.queue.put(True)
+                            self.queue.put((self.selected_piece.coordinates, (0, elt.info[2])))
+                    self.drawables = []
+                    self.promotion_flag = False
+                # if clicks on a selection square call board to move piece
                 if self.selected_flag:
                     for elt in self.drawables:
                         if elt.is_over(py.mouse):
@@ -96,15 +104,17 @@ class Choosing(State):
                     try:
                         self.selected_flag, self.selected_piece, valid_moves = self.board.select_piece(py.mouse)
                     except Exception as e:
-                        if e.__str__()[:17] == "Promotion selected":
+                        if e.__str__()[:18] == "Promotion selected":
                             self.promotion_flag = True
-                            if e.__str__()[17:] in self.board.white_pieces.keys():
-                                self.selected_piece = self.board.white_pieces[e.__str__()[17:]]
-                            elif e.__str__()[17:] in self.board.black_pieces.keys():
-                                self.selected_piece = self.board.black_pieces[e.__str__()[17:]]
+                            location = (int(e.__str__()[23]), int(e.__str__()[26]))
+                            if location in self.board.white_pieces.keys():
+                                self.selected_piece = self.board.white_pieces[location]
+                            elif location in self.board.black_pieces.keys():
+                                self.selected_piece = self.board.black_pieces[location]
                             self.start_promotion_menu()
                         else:
-                            raise Exception("Unknown error during selection")
+                            print(e)
+                            raise Exception("Unknown error during piece selection")
                     #display selection squares for piece
                     if self.selected_flag and self.board.player_color == "w":
                         for elt in valid_moves:
@@ -112,17 +122,6 @@ class Choosing(State):
                     elif self.selected_flag and self.board.player_color == "b":
                         for elt in valid_moves:
                             self.drawables.append(po.Square(elt, self.board.black_position(elt)))
-                #for pawn promotion, we have a different selection menu
-                if self.promotion_flag:
-                    for elt in self.drawables:
-                        if elt.is_over(py.mouse):
-                            if self.selected_piece.color == "w":
-                                self.board.white_pieces[self.selected_piece.coordinates] = self.create_promotion_piece(elt)
-                            elif self.selected_piece.color == "b":
-                                self.board.black_pieces[self.selected_piece.coordinates] = self.create_promotion_piece(elt)
-                    self.drawables = []
-                    self.promotion_flag = False
-
 
     def start_promotion_menu(self):
         #for pawn promotion, we have a different selection menu
@@ -138,13 +137,3 @@ class Choosing(State):
         queen_select = po.Square((0,0), (384,0))
         queen_select.set_image("Q", self.board.player_color)
         self.drawables.append(queen_select)
-
-    def create_promotion_piece(self, elt):
-        if elt.info[0] == "R":
-            return Rook(self.board.player_color, self.selected_piece.coordinates)
-        elif elt.info[0] == "H":
-            return Knight(self.board.player_color, self.selected_piece.coordinates)
-        elif elt.info[0] == "B":
-            return Bishop(self.board.player_color, self.selected_piece.coordinates)
-        elif elt.info[0] == "Q":
-            return Queen(self.board.player_color, self.selected_piece.coordinates)

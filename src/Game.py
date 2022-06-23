@@ -69,11 +69,18 @@ def game_loop(color, socket):
             queue.task_done()
             #pass a true into queue to tell thread to stop execution
             print(f"Move received{recv_move}")
-            #call board make_move thing, idk if before or after thread close
-            if color == "b":
-                board.make_move(recv_move[0], recv_move[1], "w")
+            #0 in the second move indicates we are dealing with a promotion
+            if recv_move[1][0] == 0:
+                if color == "b":
+                    board.promote_pawn(recv_move[0], recv_move[1][1], "w")
+                else:
+                    board.promote_pawn(recv_move[0], recv_move[1][1], "b")
+            # other wise we make the move on the board
             else:
-                board.make_move(recv_move[0], recv_move[1], "b")
+                if color == "b":
+                    board.make_move(recv_move[0], recv_move[1], "w")
+                else:
+                    board.make_move(recv_move[0], recv_move[1], "b")
             #change state
             turn_flag = True
             state = Choosing(win, board, queue)

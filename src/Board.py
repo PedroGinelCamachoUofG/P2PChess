@@ -166,5 +166,21 @@ class Board:
                 if (piece.coordinates[0], piece.coordinates[1] - 1) in self.white_pieces:
                     self.kill_piece((piece.coordinates[0], piece.coordinates[1] - 1), "b")
 
-    def promote_pawn(self, pawn_location, promote_to):
-        pass
+    def promote_pawn(self, pawn_location, promote_to, color):
+        if color == "w":
+            self.white_pieces[pawn_location] = self.create_promotion_piece(pawn_location, promote_to, "w")
+            print(self.white_pieces[pawn_location])
+        elif color == "b":
+            self.black_pieces[pawn_location] = self.create_promotion_piece(pawn_location, promote_to, "b")
+            print(self.black_pieces[pawn_location])
+
+
+    def create_promotion_piece(self, pawn_location, promote_to, color):
+        if promote_to == 1:
+            return Rook(color, pawn_location)
+        elif promote_to == 2:
+            return Knight(color, pawn_location)
+        elif promote_to == 3:
+            return Bishop(color, pawn_location)
+        elif promote_to == 4:
+            return Queen(color, pawn_location)
