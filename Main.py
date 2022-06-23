@@ -1,4 +1,4 @@
-from src.Menu import menu
+from src.Menu import start_menu
 from src.ErrorHandler import ErrorHandler
 '''
 =================================================================|
@@ -7,14 +7,13 @@ STUFF TO CONSIDER:
    -Refactor
    -King movement not blocked correctly-> haz una función para calcular el jaque, usala para ganar, enrocamiento y mover al rey
    -Enrocamiento
+   -End menu
 
 STUFF TO DO NOT TO THINK ABOUT:
     -historial de movimientos
     -timer, and display for it
     -and manual thing
     -chat con threads
-    -game end nicely
-    -play again
     -put the last IP address as default, historial de partidas
 BUGS:
     
@@ -35,7 +34,7 @@ def print_hi(name):
 if __name__ == '__main__':
     #try:
     print_hi('PyCharm')
-    menu()
+    start_menu()
     #except Exception as e:
     #    ErrorHandler().addError(e.__str__())
 

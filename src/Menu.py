@@ -1,14 +1,14 @@
 import sys
 import pygame as py
 import os
-import src.ErrorHandler as ErrorHandler
+from src.ErrorHandler import ErrorHandler
 import src.PyObjects as po
 from src.Game import host, join
 
-def menu():
+def start_menu():
     #necessary set up
     py.init()
-    py.display.set_caption("P2PChess Menu")
+    py.display.set_caption("P2PChess Start Menu")
     win = py.display.set_mode((600, 200))
     run = True
 
@@ -35,11 +35,23 @@ def menu():
 
             if join_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 join_button.actions[0] = join(ip_input.text.text)
-                join_button.exe_all()
+                try:
+                    join_button.exe_all()
+                except Exception as e:
+                    if e.__str__() == "Game over":
+                        end_menu()
+                    else:
+                        ErrorHandler().addError(e.__str__())
 
             elif host_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 host_button.actions[0] = host()
-                host_button.exe_all()
+                try:
+                    host_button.exe_all()
+                except Exception as e:
+                    if e.__str__() == "Game over":
+                        end_menu()
+                    else:
+                        ErrorHandler().addError(e.__str__())
 
             elif ip_input.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 ip_input.select()
@@ -67,3 +79,33 @@ def menu():
         py.display.update()
 
     print("program end")
+
+def end_menu():
+    py.init()
+    py.display.set_caption("P2PChess End Menu")
+    win = py.display.set_mode((640, 582))
+    run = True
+
+    #textures are placeholder now its just for an idea
+    dirname = os.path.join(os.path.dirname(__file__), '..')
+    join_normal = py.image.load(os.path.join(dirname, "Textures/Join_Normal.png"))
+    join_hover = py.image.load(os.path.join(dirname, "Textures/Join_Hover.png"))
+    back_to_menu = po.Button(join_normal, join_hover, 100, 100)
+
+    while run:
+
+        for event in py.event.get():
+            if event.type == py.QUIT:
+                py.quit()
+                sys.exit()
+
+            if back_to_menu.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
+                start_menu()
+
+        win.fill((255, 255, 255))
+        back_to_menu.draw(win)
+        win.blit(py.font.Font(None, 16).render("By Pedro Ginel Camacho with help of Alberto Perez Ortega", True, (0,0,0)), (140,185))
+
+#for the instructions
+def guide_menu():
+    pass
