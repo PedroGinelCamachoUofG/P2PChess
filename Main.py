@@ -12,7 +12,6 @@ STUFF TO CONSIDER:
 STUFF TO DO NOT TO THINK ABOUT:
     -historial de movimientos
     -timer, and display for it
-    -and manual thing
     -chat con threads
     -put the last IP address as default, historial de partidas
 BUGS:
