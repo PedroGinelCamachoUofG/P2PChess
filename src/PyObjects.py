@@ -30,6 +30,11 @@ class Button:
         for func in self.actions:
             func()
 
+    def update_pos(self, x, y):
+        self.x = x
+        self.y = y
+        self.object = py.Rect(self.x, self.y, self.wid, self.hei)
+
 class InputBox:
     """
     Code for giving the input box textures has been commented out

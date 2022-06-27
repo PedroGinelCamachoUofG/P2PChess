@@ -68,7 +68,7 @@ def start_menu(default_ip=None):
                 help_menu()
 
             if my_ips_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
-                display_file(os.path.relpath('Saved_IPs.txt', dirname))
+                display_IPs(os.path.relpath('Saved_IPs.txt', dirname))
 
             if event.type == py.KEYDOWN and ip_input.active:
                 if event.key == py.K_BACKSPACE:
@@ -98,16 +98,16 @@ def start_menu(default_ip=None):
 def end_menu(ip):
     py.init()
     py.display.set_caption("P2PChess End Menu")
-    win = py.display.set_mode((640, 582))
+    win = py.display.set_mode((500, 250))
 
     #textures are placeholder now its just for an idea
     dirname = os.path.join(os.path.dirname(__file__), '..')
     empty_normal = py.image.load(os.path.join(dirname, "Textures/Empty_Normal.png"))
     empty_hover = py.image.load(os.path.join(dirname, "Textures/Empty_Hover.png"))
 
-    ip_name_input = po.InputBox(50, 50, 500, 25, py.font.Font(None, 32), default_text="Type Name Here")
-    back_to_menu = po.Button(empty_normal, empty_hover, 100, 100)
-    save_ip = po.Button(empty_normal, empty_hover, 100, 200)
+    ip_name_input = po.InputBox(50, 50, 400, 25, py.font.Font(None, 32), default_text="Type Name Here")
+    back_to_menu = po.Button(empty_normal, empty_hover, 50, 150)
+    save_ip = po.Button(empty_normal, empty_hover, 250, 150)
 
     while True:
 
@@ -121,7 +121,7 @@ def end_menu(ip):
 
             elif save_ip.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 with open(os.path.relpath('Saved_IPs.txt', dirname),"a") as f:
-                    f.write(f"{ip_name_input.text.text} : {ip}")
+                    f.write(f"\n{ip_name_input.text.text} : {ip}")
 
             elif ip_name_input.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 ip_name_input.select()
@@ -139,9 +139,8 @@ def end_menu(ip):
         back_to_menu.draw(win)
         save_ip.draw(win)
 
-        win.blit(py.font.Font(None, 48).render("Menu", True, (0, 0, 0)), (160, 110))
-        win.blit(py.font.Font(None, 48).render("Save IP", True, (0, 0, 0)), (360, 110))
-        win.blit(py.font.Font(None, 16).render("By Pedro Ginel Camacho with help of Alberto Perez Ortega", True, (0,0,0)), (140,185))
+        win.blit(py.font.Font(None, 48).render("Menu", True, (0, 0, 0)), (70, 160))
+        win.blit(py.font.Font(None, 48).render("Save IP", True, (0, 0, 0)), (260, 160))
 
         py.display.update()
 
@@ -149,7 +148,7 @@ def end_menu(ip):
 def help_menu():
     py.init()
     py.display.set_caption("P2PChess Info")
-    win = py.display.set_mode((400, 400))
+    win = py.display.set_mode((600, 500))
 
     dirname = os.path.join(os.path.dirname(__file__), '..')
     empty_normal = py.image.load(os.path.join(dirname, "Textures/Empty_Normal.png"))
@@ -171,16 +170,16 @@ def help_menu():
             key_input = py.key.get_pressed()
             if key_input[py.K_LEFT]:
                 info_img_pos[0] += 10
-                back_to_menu.x += 10
+                back_to_menu.update_pos(back_to_menu.x+10, back_to_menu.y)
             if key_input[py.K_UP]:
                 info_img_pos[1] += 10
-                back_to_menu.y += 10
+                back_to_menu.update_pos(back_to_menu.x, back_to_menu.y+10)
             if key_input[py.K_RIGHT]:
                 info_img_pos[0] -= 10
-                back_to_menu.x -= 10
+                back_to_menu.update_pos(back_to_menu.x-10, back_to_menu.y)
             if key_input[py.K_DOWN]:
                 info_img_pos[1] -= 10
-                back_to_menu.y -= 10
+                back_to_menu.update_pos(back_to_menu.x, back_to_menu.y-10)
 
         win.fill((255, 255, 255))
         win.blit(info_img, tuple(info_img_pos))
@@ -189,7 +188,7 @@ def help_menu():
 
         py.display.update()
 
-def display_file(file_location):
+def display_IPs(file_location):
     py.init()
     py.display.set_caption(f"P2PChess Reading File: {file_location}")
     win = py.display.set_mode((500, 500))
