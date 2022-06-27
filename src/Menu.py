@@ -5,7 +5,7 @@ from src.ErrorHandler import ErrorHandler
 import src.PyObjects as po
 from src.Game import host, join
 
-def start_menu():
+def start_menu(default_ip=None):
     #necessary set up
     py.init()
     py.display.set_caption("P2PChess Start Menu")
@@ -21,10 +21,14 @@ def start_menu():
     empty_hover = py.image.load(os.path.join(dirname, "Textures/Empty_Hover.png"))
 
     #instatiate objects
-    ip_input = po.InputBox(50, 50, 500, 25, py.font.Font(None, 32))
+    if default_ip is not None:
+        ip_input = po.InputBox(50, 50, 500, 25, py.font.Font(None, 32), default_text=default_ip)
+    else:
+        ip_input = po.InputBox(50, 50, 500, 25, py.font.Font(None, 32))
     join_button = po.Button(join_normal, join_hover, 100, 100)
     host_button = po.Button(host_normal, host_hover, 320, 100)
-    help_button = po.Button(empty_normal, empty_hover, 237, 200)
+    help_button = po.Button(empty_normal, empty_hover, 320, 200)
+    my_ips_button = po.Button(empty_normal, empty_hover, 100, 200)
 
     #pygame loop
     while True:
@@ -36,18 +40,18 @@ def start_menu():
                 sys.exit()
 
             if join_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
-                join_button.actions[0] = join(ip_input.text.text)
                 try:
+                    join_button.actions[0] = join(ip_input.text.text)
                     join_button.exe_all()
                 except Exception as e:
                     if e.__str__() == "Game over":
-                        end_menu()
+                        end_menu(ip_input.text.text)
                     else:
                         ErrorHandler().addError(e.__str__())
 
             elif host_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
-                host_button.actions[0] = host()
                 try:
+                    host_button.actions[0] = host()
                     host_button.exe_all()
                 except Exception as e:
                     if e.__str__() == "Game over":
@@ -63,6 +67,9 @@ def start_menu():
             if help_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 help_menu()
 
+            if my_ips_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
+                display_file(os.path.relpath('Saved_IPs.txt', dirname))
+
             if event.type == py.KEYDOWN and ip_input.active:
                 if event.key == py.K_BACKSPACE:
                     ip_input.delete()
@@ -77,11 +84,13 @@ def start_menu():
         join_button.draw(win)
         host_button.draw(win)
         help_button.draw(win)
+        my_ips_button.draw(win)
 
         #texts
         win.blit(py.font.Font(None, 48).render("Join", True, (0,0,0)), (160,110))
         win.blit(py.font.Font(None, 48).render("Host", True, (0,0,0)), (380,110))
-        win.blit(py.font.Font(None, 48).render("Help", True, (0, 0, 0)), (250, 210))
+        win.blit(py.font.Font(None, 48).render("Help", True, (0, 0, 0)), (340, 210))
+        win.blit(py.font.Font(None, 48).render("My IPs", True, (0, 0, 0)), (120, 210))
         win.blit(py.font.Font(None, 16).render("By Pedro Ginel Camacho with help of Alberto Perez Ortega", True, (0,0,0)), (140,280))
 
         py.display.update()
@@ -96,7 +105,7 @@ def end_menu(ip):
     empty_normal = py.image.load(os.path.join(dirname, "Textures/Empty_Normal.png"))
     empty_hover = py.image.load(os.path.join(dirname, "Textures/Empty_Hover.png"))
 
-    ip_name_input = po.InputBox(50, 50, 500, 25, py.font.Font(None, 32))
+    ip_name_input = po.InputBox(50, 50, 500, 25, py.font.Font(None, 32), default_text="Type Name Here")
     back_to_menu = po.Button(empty_normal, empty_hover, 100, 100)
     save_ip = po.Button(empty_normal, empty_hover, 100, 200)
 
@@ -111,8 +120,8 @@ def end_menu(ip):
                 start_menu()
 
             elif save_ip.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
-                with open(os.path.relpath('..Saved_IPs.txt', dirname),"a") as f:
-                    f.write(f"{ip_name_input} : {ip}")
+                with open(os.path.relpath('Saved_IPs.txt', dirname),"a") as f:
+                    f.write(f"{ip_name_input.text.text} : {ip}")
 
             elif ip_name_input.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 ip_name_input.select()
@@ -147,7 +156,7 @@ def help_menu():
     empty_hover = py.image.load(os.path.join(dirname, "Textures/Empty_Hover.png"))
     info_img = py.image.load(os.path.join(dirname, "Textures/Info_Img.png"))
     info_img_pos = [0,0]
-    back_to_menu = po.Button(empty_normal, empty_hover, 55, 100)
+    back_to_menu = po.Button(empty_normal, empty_hover, 40, 100)
 
     while True:
 
@@ -177,5 +186,56 @@ def help_menu():
         win.blit(info_img, tuple(info_img_pos))
         back_to_menu.draw(win)
         win.blit(py.font.Font(None, 48).render("Menu", True, (0, 0, 0)), (info_img_pos[0] + 60,info_img_pos[1] + 110))
+
+        py.display.update()
+
+def display_file(file_location):
+    py.init()
+    py.display.set_caption(f"P2PChess Reading File: {file_location}")
+    win = py.display.set_mode((500, 500))
+
+    dirname = os.path.join(os.path.dirname(__file__), '..')
+    empty_normal = py.image.load(os.path.join(dirname, "Textures/Empty_Normal.png"))
+    empty_hover = py.image.load(os.path.join(dirname, "Textures/Empty_Hover.png"))
+    back_to_menu = po.Button(empty_normal, empty_hover, 320, 20)
+
+    lines_display = []
+
+    with open(file_location, "r") as f:
+        data = f.readlines()
+    data = [line.strip() for line in data]
+
+    pos_counter = 0
+    for line in data:
+        lines_display.append(po.Text(0, pos_counter*48, line, py.font.Font(None, 48)))
+        pos_counter += 1
+
+    while True:
+
+        for event in py.event.get():
+            if event.type == py.QUIT:
+                py.quit()
+                sys.exit()
+
+            if back_to_menu.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
+                start_menu()
+
+            for line in lines_display:
+                if line.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
+                    start_menu(default_ip=line.text.split(" ")[-1])
+
+            key_input = py.key.get_pressed()
+            if key_input[py.K_UP]:
+                for line in lines_display:
+                    line.y += 10
+            if key_input[py.K_DOWN]:
+                for line in lines_display:
+                    line.y -= 10
+
+        win.fill((255, 255, 255))
+        for line in lines_display:
+            line.draw(win)
+        back_to_menu.draw(win)
+        win.blit(py.font.Font(None, 48).render("Menu", True, (0, 0, 0)), (340, 30))
 
         py.display.update()

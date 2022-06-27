@@ -34,12 +34,12 @@ class InputBox:
     """
     Code for giving the input box textures has been commented out
     """
-    def __init__(self, x, y, wid, hei, font):
+    def __init__(self, x, y, wid, hei, font, default_text="127.0.0.1"):
         self.x = x
         self.y = y
         self.wid = wid
         self.hei = hei
-        self.text = Text(self.x, self.y, "127.0.0.1", font)
+        self.text = Text(self.x, self.y, default_text, font)
         self.object = py.Rect((self.x, self.y), (self.wid, self.hei))
         self.active = False
 
@@ -82,7 +82,6 @@ class Text:
         self.x = x
         self.y = y
         self.font = font
-        self.object = self.font.render(self.text, True, (0, 0, 0))
 
     def change_text(self, text):
         self.text = text
@@ -90,9 +89,13 @@ class Text:
     def add_text(self,char):
         self.text += char
 
+    def is_over(self, pointer):
+        if (self.x < pointer.get_pos()[0] < self.font.size(self.text)[0]+self.x) and (self.y < pointer.get_pos()[1] < self.font.size(self.text)[1]+self.y):
+            return True
+        return False
+
     def draw(self, win):
-        self.object = self.font.render(self.text, True, (0,0,0))
-        win.blit(self.object, (self.x, self.y))
+        win.blit(self.font.render(self.text, True, (0,0,0)), (self.x, self.y))
 
 class Arrow:
 

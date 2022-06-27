@@ -7,13 +7,13 @@ STUFF TO CONSIDER:
    -Refactor
    -King movement not blocked correctly-> haz una función para calcular el jaque, usala para ganar, enrocamiento y mover al rey
    -Enrocamiento
-   -End menu
+   -End menu -> needs some adjustment
+   -End game -> needs to communicate it or for both of them to close at the same time
 
 STUFF TO DO NOT TO THINK ABOUT:
     -historial de movimientos
     -timer, and display for it
     -chat con threads
-    -put the last IP address as default, historial de partidas
 BUGS:
     
 '''

@@ -18,6 +18,7 @@ class Board:
             self.image = py.transform.rotate(py.image.load(os.path.join(dirname, "Textures/board1.png")), 180)
         self.player_color = player_color
         self.update_collision_box_pos()
+        self.is_game_over = False
 
     def update_collision_box_pos(self):
         if self.player_color == "w":
@@ -120,7 +121,8 @@ class Board:
         if color == "b":
             if pos in self.white_pieces:
                 if self.white_pieces[pos].type == "K":
-                    raise Exception("Game over")
+                    self.is_game_over = True
+                    print("King killed")
                 self.white_pieces[pos].is_in_play = False
                 #changes piece to the dead zone
                 self.white_pieces[pos].coordinates = (0, self.dead_white_counter/2 + 1)
@@ -131,7 +133,8 @@ class Board:
         elif color == "w":
             if pos in self.black_pieces:
                 if self.black_pieces[pos].type == "K":
-                    raise Exception("Game over")
+                    self.is_game_over = True
+                    print("King killed")
                 self.black_pieces[pos].is_in_play = False
                 self.black_pieces[pos].coordinates = (9, self.dead_black_counter/2 + 1)
                 self.dead_black_counter += 1

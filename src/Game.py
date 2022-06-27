@@ -59,6 +59,9 @@ def game_loop(color, socket):
             move = queue.get()
             Net.send_move(socket, move)
             #change state
+            # if the is_game_over flag is True it indicates that the move ended the game
+            if board.is_game_over:
+                raise Exception("Game over")
             turn_flag = False
             state = Waiting(win, board, queue)
         else:
@@ -81,6 +84,9 @@ def game_loop(color, socket):
                     board.make_move(recv_move[0], recv_move[1], "w")
                 else:
                     board.make_move(recv_move[0], recv_move[1], "b")
+            # if the is_game_over flag is True it indicates that the move ended the game
+            if board.is_game_over:
+                raise Exception("Game over")
             #change state
             turn_flag = True
             state = Choosing(win, board, queue)
