@@ -1,3 +1,4 @@
+import sys
 import threading
 from queue import Queue
 import src.Net as Net
@@ -9,7 +10,7 @@ from src.Board import Board
 
 def host():
     print("hosting game")
-    game_loop("w", Net.mode_recieve(3000))
+    game_loop("w", Net.mode_receive(3000))
 
 def join(ip):
     print(f"joining at {ip}")
@@ -29,7 +30,6 @@ def threading_recv_move(socket, queue):
 #function containing the actual game
 
 def game_loop(color, socket):
-    print("Game loop started")
 
     #pygame setup
     py.init()
@@ -37,9 +37,12 @@ def game_loop(color, socket):
     win = py.display.set_mode((640,582))
     run = True
 
-    #instantiate objects
+    #instantiate objects for game
     queue = Queue()
     board = Board(color)
+
+    #instantiate communication for game closing
+
     
     #set order
     if color == "w":
@@ -51,6 +54,7 @@ def game_loop(color, socket):
 
     #pygame loop
     while run:
+        py.event.pump()
 
         print(f"This player is: {color} pieces. Is it their turn: {turn_flag}")
         #recv action if awaiting turn
@@ -61,6 +65,7 @@ def game_loop(color, socket):
             #change state
             # if the is_game_over flag is True it indicates that the move ended the game
             if board.is_game_over:
+                Net.end(socket)
                 raise Exception("Game over")
             turn_flag = False
             state = Waiting(win, board, queue)
@@ -70,8 +75,6 @@ def game_loop(color, socket):
             state.run()
             recv_move = queue.get()
             queue.task_done()
-            #pass a true into queue to tell thread to stop execution
-            print(f"Move received{recv_move}")
             #0 in the second move indicates we are dealing with a promotion
             if recv_move[1][0] == 0:
                 if color == "b":
@@ -86,6 +89,7 @@ def game_loop(color, socket):
                     board.make_move(recv_move[0], recv_move[1], "b")
             # if the is_game_over flag is True it indicates that the move ended the game
             if board.is_game_over:
+                Net.end(socket)
                 raise Exception("Game over")
             #change state
             turn_flag = True

@@ -7,15 +7,14 @@ STUFF TO CONSIDER:
    -Refactor
    -King movement not blocked correctly-> haz una función para calcular el jaque, usala para ganar, enrocamiento y mover al rey
    -Enrocamiento
-
+   -finish info menu
 
 STUFF TO DO NOT TO THINK ABOUT:
     -historial de movimientos
     -timer, and display for it
     -chat con threads
 BUGS:
-    -help menu button collision is bugged
-    -if someone closes their connection, close the other one too
+    -when the person who is choosing closes their connection pygame crashes I really can't figure out why
 '''
 
 # This is a sample Python script.
@@ -31,10 +30,10 @@ def print_hi(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    #try:
-    print_hi('PyCharm')
-    start_menu()
-    #except Exception as e:
-    #    ErrorHandler().addError(e.__str__())
+    try:
+        print_hi('PyCharm')
+        start_menu()
+    except Exception as e:
+        ErrorHandler().add_error(e.__str__())
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

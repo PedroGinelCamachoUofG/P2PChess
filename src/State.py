@@ -1,5 +1,6 @@
 import sys
 import src.PyObjects as po
+from src import Net
 from src.Piece import *
 
 class State:
@@ -25,6 +26,7 @@ class State:
                     break  # end thread
 
 
+
     #abstract method
     def interactions(self):
         pass
@@ -47,6 +49,7 @@ class Waiting(State):
     def interactions(self):
         for event in py.event.get():
             if event.type == py.QUIT:
+                #send a message to say window was closed to say its ended
                 py.quit()
                 sys.exit()
         if py.mouse.get_pressed()[0]:
@@ -75,6 +78,7 @@ class Choosing(State):
     def interactions(self):
         for event in py.event.get():
             if event.type == py.QUIT:
+                # update queue to say its ended
                 py.quit()
                 sys.exit()
             if event.type == py.MOUSEBUTTONDOWN:

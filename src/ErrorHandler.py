@@ -22,13 +22,19 @@ class ErrorHandler:
             ErrorHandler.__instance = self
 
     def add_error(self, error):
-        print(f"adding {error}")
+        if error[1:10] == "WinError ":
+            error = error[10:15]
         if error in self.error_dict:
             self.error_dict[error][0] =  True
         else:
             #Unknow errors are considered fatal
             self.error_dict[error] = [True, True, "Unknown Error"]
         if self.error_dict[error][1]:
+            if error == "tuple index out of range":
+                print("Opponent closed window while choosing")
+                print("This error crashes pygame")
+                print("Just close the window")
+                sys.exit()
             self.launch_log()
 
     def clean_log(self):
@@ -39,29 +45,33 @@ class ErrorHandler:
         """
         self.error_dict = {
             "timed outh":[False, True, "No one connected when hosting"],
-            "[WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión":[
-                False, True, "Tried to connect to self but wasn't hosting"],
+            "10061":[False, True, "Tried to connect to self but wasn't hosting"],
             "[Errno 11001] getaddrinfo failed":[False, True, "Input given was not an actual IP address"],
+            "10054":[False, True, "Opponent closed window while waiting"],
+            "tuple index out of range":[False, True, "Opponent closed window while choosing"]
         }
 
     def launch_log(self):
-        py.display.set_caption("P2PChess Error Log")
-        run = True
+        py.init()
         win = py.display.set_mode((600, 300))
+        py.display.set_caption("P2PChess Error Log")
+
+        run = True
         drawables = []
         position_counter = 0
         for error, explanation in self.error_dict.items():
             if explanation[0]:
                 if explanation[1]:
-                    text = f"FATAL | Error: {error} | Explanation: {explanation[2]}"
+                    text = f"FATAL | Explanation: {explanation[2]} | Error: {error}"
                 else:
-                    text = f"Error: {error} | Explanation: {explanation[2]}"
+                    text = f"Explanation: {explanation[2]} | Error: {error}"
                 drawables.append(po.Text(0, position_counter*24,
                                          text,
                                          py.font.Font(None, 24)))
                 position_counter += 1
 
         while run:
+            py.event.pump()
 
             for event in py.event.get():
                 if event.type == py.QUIT:

@@ -32,6 +32,7 @@ def start_menu(default_ip=None):
 
     #pygame loop
     while True:
+        py.event.pump()
 
         #events
         for event in py.event.get():
@@ -47,7 +48,7 @@ def start_menu(default_ip=None):
                     if e.__str__() == "Game over":
                         end_menu(ip_input.text.text)
                     else:
-                        ErrorHandler().addError(e.__str__())
+                        ErrorHandler().add_error(e.__str__())
 
             elif host_button.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 try:
@@ -57,7 +58,7 @@ def start_menu(default_ip=None):
                     if e.__str__() == "Game over":
                         end_menu(ip_input.text.text)
                     else:
-                        ErrorHandler().addError(e.__str__())
+                        ErrorHandler().add_error(e.__str__())
 
             elif ip_input.is_over(py.mouse) and event.type == py.MOUSEBUTTONDOWN:
                 ip_input.select()
@@ -110,6 +111,7 @@ def end_menu(ip):
     save_ip = po.Button(empty_normal, empty_hover, 250, 150)
 
     while True:
+        py.event.pump()
 
         for event in py.event.get():
             if event.type == py.QUIT:
@@ -158,6 +160,7 @@ def help_menu():
     back_to_menu = po.Button(empty_normal, empty_hover, 40, 100)
 
     while True:
+        py.event.pump()
 
         for event in py.event.get():
             if event.type == py.QUIT:
@@ -210,6 +213,7 @@ def display_IPs(file_location):
         pos_counter += 1
 
     while True:
+        py.event.pump()
 
         for event in py.event.get():
             if event.type == py.QUIT:
