@@ -30,11 +30,6 @@ class ErrorHandler:
             #Unknow errors are considered fatal
             self.error_dict[error] = [True, True, "Unknown Error"]
         if self.error_dict[error][1]:
-            if error == "tuple index out of range":
-                print("Opponent closed window while choosing")
-                print("This error crashes pygame")
-                print("Just close the window")
-                sys.exit()
             self.launch_log()
 
     def clean_log(self):

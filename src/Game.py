@@ -2,6 +2,7 @@ import sys
 import threading
 from queue import Queue
 import src.Net as Net
+from src.ErrorHandler import ErrorHandler
 from src.State import *
 from src.Board import Board
 
@@ -15,17 +16,6 @@ def host():
 def join(ip):
     print(f"joining at {ip}")
     game_loop("b", Net.mode_request(ip, 3000))
-
-#helper function needed to do threading
-
-def threading_recv_move(socket, queue):
-    print("executing")
-    #listens for move
-    recv_move = Net.recv_move(socket)
-    #when it receives a move it puts it in the queue to stop state function
-    queue.put(True)
-    #puts the moved in the queue
-    queue.put(recv_move)
 
 #function containing the actual game
 
@@ -70,7 +60,7 @@ def game_loop(color, socket):
             turn_flag = False
             state = Waiting(win, board, queue)
         else:
-            listener = threading.Thread(target=threading_recv_move, args=(socket,queue), daemon=True)
+            listener = threading.Thread(target=Net.threading_recv_move, args=(socket,queue), daemon=True)
             listener.start()
             state.run()
             recv_move = queue.get()

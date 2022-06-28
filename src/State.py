@@ -19,11 +19,13 @@ class State:
             self.draw()
 
             if not self.queue.empty():
+                # if the first item is not a boolean, it means there was an error in the thread
+                # so we look for it and catch it with the error handler
                 end_flag = self.queue.get()
                 self.queue.task_done()
-                # if a move is being passed too(choosing state) mark as done so join doesn't block
-                if end_flag:
-                    break  # end thread
+                if type(end_flag) != type(True):
+                    raise Exception(end_flag)
+                break  # end state
 
 
 
