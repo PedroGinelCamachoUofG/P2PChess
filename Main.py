@@ -14,7 +14,6 @@ STUFF TO DO NOT TO THINK ABOUT:
     -timer, and display for it
     -chat con threads
 BUGS:
-    -when the person who is choosing closes their connection pygame crashes I really can't figure out why
 '''
 
 # This is a sample Python script.

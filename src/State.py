@@ -76,6 +76,9 @@ class Choosing(State):
         self.selected_flag = False
         self.selected_piece = None
         self.promotion_flag = False
+        #check if it is checkmate to end the game
+        self.board.is_check_mate()
+
 
     def interactions(self):
         for event in py.event.get():
@@ -128,6 +131,8 @@ class Choosing(State):
                     elif self.selected_flag and self.board.player_color == "b":
                         for elt in valid_moves:
                             self.drawables.append(po.Square(elt, self.board.black_position(elt)))
+                    else:
+                        raise Exception("piece is not white or black")
 
     def start_promotion_menu(self):
         #for pawn promotion, we have a different selection menu
