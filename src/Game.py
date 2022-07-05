@@ -33,7 +33,6 @@ def game_loop(color, socket):
 
     #instantiate communication for game closing
 
-    
     #set order
     if color == "w":
         turn_flag = True

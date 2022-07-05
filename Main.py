@@ -14,6 +14,10 @@ STUFF TO DO NOT TO THINK ABOUT:
     -timer, and display for it
     -chat con threads
 BUGS:
+    -how does winning player know it is check mate?:
+        make the is_check_mate function check both players
+        by changing the player color and executing the function as it works currently on both like that
+        the issue is doing thins without a bunch of ifs for the color change
 '''
 
 # This is a sample Python script.

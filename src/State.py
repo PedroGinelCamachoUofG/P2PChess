@@ -10,6 +10,7 @@ class State:
         self.board = board
         self.queue = queue
         self.drawables = []
+        self.board.is_check_mate()
 
     def run(self):
         while True:
@@ -26,8 +27,6 @@ class State:
                 if type(end_flag) != type(True):
                     raise Exception(end_flag)
                 break  # end state
-
-
 
     #abstract method
     def interactions(self):
@@ -122,17 +121,19 @@ class Choosing(State):
                                 self.selected_piece = self.board.black_pieces[location]
                             self.start_promotion_menu()
                         else:
-                            print(e)
-                            raise Exception("Unknown error during piece selection")
+                            raise Exception(f"Unknown error during piece selection {e}")
                     #display selection squares for piece
-                    if self.selected_flag and self.board.player_color == "w":
+                    # no piece selected
+                    if not self.selected_flag:
+                        pass
+                    elif self.selected_flag and self.board.player_color == "w":
                         for elt in valid_moves:
                             self.drawables.append(po.Square(elt, self.board.white_position(elt)))
                     elif self.selected_flag and self.board.player_color == "b":
                         for elt in valid_moves:
                             self.drawables.append(po.Square(elt, self.board.black_position(elt)))
                     else:
-                        raise Exception("piece is not white or black")
+                        raise Exception("piece is not white or black at Choosing(State).interactions")
 
     def start_promotion_menu(self):
         #for pawn promotion, we have a different selection menu

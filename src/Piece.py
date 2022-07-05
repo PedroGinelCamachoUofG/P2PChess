@@ -81,7 +81,7 @@ class Pawn(Piece):
         output = []
         if self.color == "w":
             # move forward one
-            if (self.coordinates[0], self.coordinates[1] + 1) not in (args[0] and args[1]):
+            if ((self.coordinates[0], self.coordinates[1] + 1) not in args[0]) and ((self.coordinates[0], self.coordinates[1] + 1) not in args[1]):
                 output.append((self.coordinates[0], self.coordinates[1] + 1))
             # move 2 at start
             if self.coordinates[1] == 2 and ((self.coordinates[0], self.coordinates[1] + 2) not in args[0]) and ((self.coordinates[0], self.coordinates[1] + 1) not in args[0]) and ((self.coordinates[0], self.coordinates[1] + 2) not in args[1]):
@@ -94,7 +94,7 @@ class Pawn(Piece):
 
         elif self.color == "b":
             # move forward one
-            if (self.coordinates[0], self.coordinates[1] - 1) not in (args[0] and args[1]):
+            if ((self.coordinates[0], self.coordinates[1] - 1) not in args[0]) and ((self.coordinates[0], self.coordinates[1] - 1) not in args[1]):
                 output.append((self.coordinates[0], self.coordinates[1] - 1))
             # move 2 at start
             if self.coordinates[1] == 7 and ((self.coordinates[0], self.coordinates[1] - 2) not in args[0]) and ((self.coordinates[0], self.coordinates[1] - 1) not in args[0]) and ((self.coordinates[0], self.coordinates[1] - 2) not in  args[1]):
@@ -141,12 +141,10 @@ class King(Piece):
 
     def valid_moves(self, args=([],)):
         positions = [(self.coordinates[0]-1+i,self.coordinates[1]-1+j) for i in range(0,3) for j in range(0,3) if self.in_board((self.coordinates[0]-1+i,self.coordinates[1]-1+j))]
-        if not args[0]:
-            return positions
-        print(args[0])
-        for elt in args[0]:
-            if elt in positions:
-                positions.remove(elt)
+        if args[0]:
+            for elt in args[0]:
+                if elt in positions:
+                    positions.remove(elt)
         return positions
 
     def __str__(self):

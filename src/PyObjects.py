@@ -190,3 +190,12 @@ class Square:
                  raise Exception("invalid piece selection")
          else:
              raise Exception("Invalid color at PyObjects.set_image")
+
+class FakePointer:
+
+    def __init__(self, coords):
+        self.x = coords[0]
+        self.y = coords[1]
+
+    def get_pos(self):
+        return self.x, self.y

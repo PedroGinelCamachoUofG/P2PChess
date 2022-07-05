@@ -1,6 +1,7 @@
 from src.Piece import *
 import os
 import pygame as py
+from src.PyObjects import FakePointer
 
 class Board:
 
@@ -61,107 +62,124 @@ class Board:
     def black_position(self, coordinates):
         return (9 - coordinates[0]) * 64, coordinates[1] * 64
 
-    def select_pawn(self, piece, allies, enemies):
-        output = piece.valid_moves(args=(allies, enemies))
-        if piece.coordinates[1] == 8 and piece.color == "w":
-            raise Exception(f"Promotion selected at {piece.coordinates}")
-        elif piece.coordinates[1] == 1 and piece.color == "b":
-            raise Exception(f"Promotion selected at {piece.coordinates}")
-        return True, piece, output
-
     def is_check_mate(self):
         #go through all own pieces and select them
         if self.player_color == "w":
             for piece_pos in self.white_pieces.keys():
-                #this will return True if there are valid moves, ie is not check mate
-                if self.select_piece(piece_pos)[0]:
-                    break
+                #this will return True at [0] if there are valid moves, ie is not check mate
+                #because of how select piece works we need to fake the position of the mouse
+                fake_mouse = FakePointer(self.white_position(piece_pos))
+                try:
+                    if self.select_piece(fake_mouse)[0]:
+                        return None
+                except Exception as e:
+                    if e.__str__()[:9] == "Promotion":
+                        pass
+                    else:
+                        raise e
         elif self.player_color == "b":
             for piece_pos in self.black_pieces.keys():
-                if self.select_piece(piece_pos)[0]:
-                    break
+                fake_mouse = FakePointer(self.black_position(piece_pos))
+                try:
+                    if self.select_piece(fake_mouse)[0]:
+                        return None
+                except Exception as e:
+                    if e.__str__()[:9] == "Promotion":
+                        pass
+                    else:
+                        raise e
         else:
-            raise Exception("player is not white or black")
-        raise Exception("Game over")
+            raise Exception("player is not white or black at Board.is_check_mate")
+        self.is_game_over = True
 
     def creates_check(self, original, new, color_flag):
         #initialise with colors
         if color_flag == "w":
-            piece = self.white_pieces[original]
             allies = self.white_pieces.copy()
             enemies = self.black_pieces.copy()
         elif color_flag == "b":
-            piece = self.black_pieces[original]
             allies = self.black_pieces.copy()
             enemies = self.white_pieces.copy()
         else:
-            raise Exception("piece is not white or black")
+            raise Exception("piece is not white or black at Board.creates_check")
         #find the king piece
         king = None
         for elt in allies.values():
             if elt.type == "K":
                 king = elt
         if king is None:
-            raise Exception(f"Could not find {color_flag} king")
+            raise Exception(f"Could not find {color_flag} king at Board.creates_check")
 
-        #check if move puts king in check
+        #fake the move
         allies[new] = allies[original]
-        allies[original].pop()
-        for enemy in enemies:
+        allies.pop(original)
+        allies[new].coordinates = new
+        #fake the death of aa piece if any would be killed by the move
+        if new in enemies.keys():
+            enemies.pop(new)
+        # check if it put the king in check
+        for enemy in enemies.values():
             if king.coordinates in enemy.valid_moves(args=(enemies, allies)):
+                #this reset stopped it from crashing but shouldn't be needed in theory
+                allies[original] = allies[new]
+                allies.pop(new)
+                allies[original].coordinates = original
                 return True
+        allies[original] = allies[new]
+        allies.pop(new)
+        allies[original].coordinates = original
         return False
 
     def select_piece(self, coordinates):
         #code is pretty much duplicated but I'm not sure how to not do this
         #restrict selection of pieces only to the player's color
-        valid_moves = None
+        valid_moves = []
         selected_piece = None
         if self.player_color == "w":
             for piece in self.white_pieces.values():
                 if piece.is_over(coordinates) and piece.is_in_play:
-                    print(piece)
                     #checks if pawn has piece in front and passes it
                     if piece.type == "P":
-                        return self.select_pawn(piece, self.white_pieces.keys(), self.black_pieces.keys())
+                        selected_piece, valid_moves = self.select_pawn(piece, self.white_pieces.keys(), self.black_pieces.keys())
                     #King piece must know movement options of all enemies to know where it can move
                     elif piece.type == "K":
                         blocked_moves = [pos for pos in self.white_pieces.keys()]
-                        for elt in self.black_pieces.values():
-                            enemy_piece_moves = elt.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys()))
-                            for move in enemy_piece_moves:
-                                blocked_moves.append(move)
                         valid_moves = piece.valid_moves(args=(blocked_moves,))
                         selected_piece = piece
                     else:
                         valid_moves =  piece.valid_moves(args=(self.white_pieces.keys(), self.black_pieces.keys()))
                         selected_piece = piece
+                    break
         elif self.player_color == "b":
             for piece in self.black_pieces.values():
                 if piece.is_over(coordinates) and piece.is_in_play:
-                    print(piece)
                     if piece.type == "P":
-                        return self.select_pawn(piece, self.black_pieces.keys(), self.white_pieces.keys())
+                        selected_piece, valid_moves = self.select_pawn(piece, self.black_pieces.keys(), self.white_pieces.keys())
                     elif piece.type == "K":
                         blocked_moves = [pos for pos in self.black_pieces.keys()]
-                        for elt in self.white_pieces.values():
-                            enemy_piece_moves = elt.valid_moves(args=(self.white_pieces.keys(), self.black_pieces.keys()))
-                            for move in enemy_piece_moves:
-                                blocked_moves.append(move)
                         valid_moves =  piece.valid_moves(args=(blocked_moves,))
                         selected_piece = piece
                     else:
                         valid_moves =  piece.valid_moves(args=(self.black_pieces.keys(), self.white_pieces.keys()))
                         selected_piece = piece
+                    break
         else:
-            raise Exception("Player was not white or black")
-        for move in valid_moves:#ISSUE HERE
-            if self.creates_check(piece.coordinates, move, piece.color):
-                valid_moves.remove(move)
-        if valid_moves:
-            return True, selected_piece, valid_moves
+            raise Exception("Player was not white or black at Board.select_piece")
+        filtered_moves = []
+        for move in valid_moves:
+            if not self.creates_check(selected_piece.coordinates, move, selected_piece.color):
+               filtered_moves.append(move)
+        if filtered_moves:
+            return True, selected_piece, filtered_moves
         else:
-            return False, selected_piece, valid_moves
+            return False, selected_piece, filtered_moves
+
+    def select_pawn(self, piece, allies, enemies):
+        if piece.coordinates[1] == 8 and piece.color == "w":
+            raise Exception(f"Promotion selected at {piece.coordinates}")
+        elif piece.coordinates[1] == 1 and piece.color == "b":
+            raise Exception(f"Promotion selected at {piece.coordinates}")
+        return piece, piece.valid_moves(args=(allies, enemies))
 
     def make_move(self, original, new, color_flag):
         #kills piece if it is the case
@@ -179,7 +197,6 @@ class Board:
             if pos in self.white_pieces:
                 if self.white_pieces[pos].type == "K":
                     self.is_game_over = True
-                    print("King killed")
                 self.white_pieces[pos].is_in_play = False
                 #changes piece to the dead zone
                 self.white_pieces[pos].coordinates = (0, self.dead_white_counter/2 + 1)
@@ -191,7 +208,6 @@ class Board:
             if pos in self.black_pieces:
                 if self.black_pieces[pos].type == "K":
                     self.is_game_over = True
-                    print("King killed")
                 self.black_pieces[pos].is_in_play = False
                 self.black_pieces[pos].coordinates = (9, self.dead_black_counter/2 + 1)
                 self.dead_black_counter += 1
@@ -212,7 +228,7 @@ class Board:
             self.black_pieces[new] = self.black_pieces[original]
             self.black_pieces.pop(original)
         else:
-            raise Exception("Invalid move")
+            raise Exception("Invalid move at Board.make_move")
 
     def check_en_passant(self, original, new, flag):
         if flag == "w":
