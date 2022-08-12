@@ -138,6 +138,7 @@ class King(Piece):
             self.image = py.image.load(os.path.join(dirname, "Textures/Black_King.png"))
         self.image.set_colorkey((255, 255, 255))
         self.image = self.image.convert_alpha()
+        self.has_moved = False#this is for castling
 
     def valid_moves(self, args=([],)):
         positions = [(self.coordinates[0]-1+i,self.coordinates[1]-1+j) for i in range(0,3) for j in range(0,3) if self.in_board((self.coordinates[0]-1+i,self.coordinates[1]-1+j))]
@@ -208,6 +209,7 @@ class Rook(Piece):
             self.image = py.image.load(os.path.join(dirname, "Textures/Black_Rook.png"))
         self.image.set_colorkey((255, 255, 255))
         self.image = self.image.convert_alpha()
+        self.has_moved = False  # this is for castling
 
     def valid_moves(self, args=(None, None)):
         return self.move_calculate(args[0], args[1], ((1,0),(-1,0),(0,1),(0,-1)))

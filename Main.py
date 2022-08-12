@@ -3,21 +3,19 @@ from src.ErrorHandler import ErrorHandler
 '''
 =================================================================|
                         TO DO LIST
-STUFF TO CONSIDER: 
+STUFF TO CONSIDER:
+   -Do en passant well
    -Refactor
-   -King movement not blocked correctly-> haz una función para calcular el jaque, usala para ganar, enrocamiento y mover al rey
-   -Enrocamiento
-   -finish info menu
+   -Castling
+   -Make clear in end menu that the game has ended(eg: put GAME OVER)
 
 STUFF TO DO NOT TO THINK ABOUT:
+    -display if it was win or loose
     -historial de movimientos
     -timer, and display for it
     -chat con threads
 BUGS:
-    -how does winning player know it is check mate?:
-        make the is_check_mate function check both players
-        by changing the player color and executing the function as it works currently on both like that
-        the issue is doing thins without a bunch of ifs for the color change
+    -promotion happens when it reaches the last square and I think its buggy
 '''
 
 # This is a sample Python script.

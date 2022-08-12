@@ -75,8 +75,6 @@ class Choosing(State):
         self.selected_flag = False
         self.selected_piece = None
         self.promotion_flag = False
-        #check if it is checkmate to end the game
-        self.board.is_check_mate()
 
 
     def interactions(self):
